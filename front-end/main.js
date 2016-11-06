@@ -15,8 +15,8 @@ app.on('ready', function() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: false,
-      webSecurity: false,
+      nodeIntegration: true,
+      webSecurity: true,
     },
   });
 

@@ -26,36 +26,11 @@
 'use strict';
 
 // TODO: Replace with loading bounding boxes from files
-var BOUNDING_BOXES =
-  [
-    {
-      'x': 55.5,
-      'y': 78.5,
-      'w': 36,
-      'h': 2,
-      'page': 1,
-      'added': false,
-      'data': "<div style='padding:20px'><h1>Robinson (1968)</h1> <br> This paper reviews the literature on eye movements from the standpoint of automatic control systems. Some general reference to the neurophysiology and neuroanatomy of the oculomotor system is made, but the emphasis is upon those interdisciplinary studies which, either qualitatively or quantitatively, describe eye movements within the framework of control systems theory. Reviewed are the four major subdivisions of eye movement control: the saccadic, the smooth pursuit, the vergence, and the vestibular systems. Analytical descriptions of the mechanics of the eyeball, orbit, and extraocular muscles, which are common to all these systems, are also reviewed. <br><br> <h1>Finlay and Walker (1999)</h1> <br> During active vision, the eyes continually scan the visual environment using saccadic scanning movements. This target article presents an information processing model for the control of these movements, with some close parallels to established physiological processes in the oculomotor system. Two separate pathways are concerned with the spatial and the temporal programming of the movement. In the temporal pathway there is spatially distributed coding and the saccade target is selected from a salience map. Both pathways descend through a hierarchy of levels, the lower ones operating automatically. Visual onsets have automatic access to the eye control system via the lower levels. Various centres in each pathway are interconnected via reciprocal inhibition. The model accounts for a number of well-established phenomena in target-elicited saccades: the gap effect, express saccades, the remote distractor effect, and the global effect. High-level control of the pathways in tasks such as visual search and reading is discussed; it operates through spatial selection and search selection, which generally combine in an automated way. The model is examined in relation to data from patients with unilateral neglect.</div>"
-    },
-    {
-      'x': 17,
-      'y': 66.5,
-      'w': 22,
-      'h': 2,
-      'page': 2,
-      'added': false,
-      'data': "<div style='padding-right:30px; padding-top:100px;'><h1>Snodderly, Kagan, and Gur(2001)</h1></div><br><img src='http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg'/>"
-    },
-    {
-      'x': 53,
-      'y': 14,
-      'w': 37.5,
-      'h': 2,
-      'page': 2,
-      'added': false,
-      'data': "<div style='padding-right:20px;padding-top:60px;'><h1>Asaad,Rainer, & Miller, 2000</h1> <br> This paper reviews the literature on eye movements from the standpoint of automatic control systems. Some general reference to the neurophysiology and neuroanatomy of the oculomotor system is made, but the emphasis is upon those interdisciplinary studies which, either qualitatively or quantitatively, describe eye movements within the framework of control systems theory. Reviewed are the four major subdivisions of eye movement control: the saccadic, the smooth pursuit, the vergence, and the vestibular systems. Analytical descriptions of the mechanics of the eyeball, orbit, and extraocular muscles, which are common to all these systems, are also reviewed.</div>"
-    }
-  ];
+var fs = require('fs');
+var path = require('path');
+var exampleFilePath = path.resolve(__dirname, 'examples/bb_example.json');
+var BOUNDING_BOXES = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
+
 
 var ANNOTATION_MARGIN = 400;
 var ANNOTATION_ACTIVE = true;

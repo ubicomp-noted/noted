@@ -8237,12 +8237,7 @@ if (typeof __webpack_require__ !== 'undefined') {
 if (typeof requirejs !== 'undefined' && requirejs.toUrl) {
   PDFJS.workerSrc = requirejs.toUrl('pdfjs-dist/build/pdf.worker.js');
 }
-var fakeWorkerFilesLoader = useRequireEnsure ? (function (callback) {
-  require.ensure([], function () {
-    require('./pdf.worker.js');
-    callback();
-  });
-}) : (typeof requirejs !== 'undefined') ? (function (callback) {
+var fakeWorkerFilesLoader = (typeof requirejs !== 'undefined') ? (function (callback) {
   requirejs(['pdfjs-dist/build/pdf.worker'], function (worker) {
     callback();
   });

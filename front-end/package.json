@@ -10,7 +10,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron-prebuilt": "^0.36.4"
+    "electron-prebuilt": "^0.36.4",
+    "node-ensure": "^0.0.0"
   },
   "dependencies": {}
 }
