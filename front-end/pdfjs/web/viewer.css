@@ -15,7 +15,8 @@
 
 .boundingBox {
   position: relative;
-  background-color: blue;
+  background-color: blue;  
+  z-index:9999;
 }
 
 .annotationDiv {
