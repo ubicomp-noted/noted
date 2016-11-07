@@ -58,6 +58,7 @@ document.addEventListener('keydown', function(e) {
         var pageContainerDivs = document.getElementsByClassName("page");
         var canvasWrapperDivs = document.getElementsByClassName("canvasWrapper");
         var textLayerDivs = document.getElementsByClassName("textLayer");
+        var eyeTracking = getEyeTrackingInstance();
         switch(e.which) {
           case 37: // left
 
@@ -90,10 +91,10 @@ document.addEventListener('keydown', function(e) {
               var pageNum = bb_iter.page;
               var bbData = bb_iter.data;
               var added =  bb_iter.added;
-              if(!added) {                         
+              if(!added) {
                 document.getElementById("annotationDiv" + pageNum).innerHTML += bbData;
-                bb_iter.added = true; 
-              }   
+                bb_iter.added = true;
+              }
               i++;
             }
             for (var i = annotationDivs.length - 1; i >= 0; i--) {
@@ -116,6 +117,7 @@ document.addEventListener('keydown', function(e) {
             break;
 
           case 40: // down
+            eyeTracking.getTest();
             break;
 
           default: return; // exit this handler for other keys
@@ -3939,7 +3941,7 @@ var PDFPageView = (function PDFPageViewClosure() {
       annotationDiv.classList.add('annotationDiv');
       annotationDiv.id = 'annotationDiv' + this.id;
 
-      
+
 
       canvasWrapper.appendChild(canvas);
       this.div.appendChild(annotationDiv);
@@ -8098,4 +8100,3 @@ window.addEventListener('afterprint', function afterPrint(evt) {
     window.requestAnimationFrame(resolve);
   });
 })();
-
