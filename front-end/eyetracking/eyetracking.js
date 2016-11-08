@@ -9,10 +9,10 @@ EyeTracking = function() {
     this.frontendDisplay = null;
 
     // parameters
-    this.hname = "127.0.0.1"; //currently not used
-    this.prt = 6555; // currently not used
     this.eyetribe = require('eyetribe');
     this.intervalPerMilisecond = 500;
+    this.timeTrackedMilisecond = 3000;
+    this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
 
     // received by EyeTribe
     this.currentData = {
@@ -20,6 +20,7 @@ EyeTracking = function() {
             'x': null,
             'y': null
         },
+        'gazeHistory': [],
         'panelFocus': null,
         'closestBoundingBox': null
     };
@@ -56,10 +57,40 @@ EyeTracking.prototype._init = function() {
             'x': data.gaze_x,
             'y': data.gaze_y
         };
-        self._decideFocus();
-        self._determineClosestBoundingBox();
+        if (self._isLookingAtScreen()) {
+            self._addGazeToHistory();
+            self._decideFocus();
+            self._determineClosestBoundingBox();
+        } else {
+            console.log("off the screen");
+        }
     }, self.intervalPerMilisecond);
 
+}
+
+EyeTracking.prototype._addGazeToHistory = function() {
+    var self = this;
+
+    self.currentData['gazeHistory'].unshift(self.currentData['gaze']);
+
+    if (self.currentData['gazeHistory'].length > self.gazeHistorySize)
+        self.currentData['gazeHistory'].splice(self.currentData['gazeHistory'].length - 1, 1);
+
+}
+
+
+// determine whether the user is currently looking at the screen
+EyeTracking.prototype._isLookingAtScreen = function() {
+    var self = this;
+    var isLookingAtScreen = true;
+    if (self.currentData['gaze']['x'] == null || self.currentData['gaze']['y'] == null) {
+        isLookingAtScreen = false; // the gaze is not init
+    } else if (self.currentData['gaze']['x'] < 0 || self.currentData['gaze']['y'] < 0) {
+        isLookingAtScreen = false; // the gaze is off the to the left or above the screen
+    } else if (self.currentData['gaze']['x'] > self.frontendDisplay['screen']['x'] || self.currentData['gaze']['y'] > self.frontendDisplay['screen']['y']) {
+        isLookingAtScreen = false; // the gaze is off to the right or below the screen
+    }
+    return isLookingAtScreen;
 }
 
 // determine whether the left panel or the right panel is currently in focus
@@ -80,7 +111,7 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
         'index': null,
         'boundingBox': null,
         'distance': null,
-        'panelFocus' : self.currentData['panelFocus']
+        'panelFocus': self.currentData['panelFocus']
     };
     for (var i = 0; i < boundingBoxes.length; i++) {
         //var coordinates = self._constructBoundingBoxCoordinates(boundingBoxes[i]);
@@ -90,7 +121,7 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
             closestBoundingBox['distance'] = 0;
             break;
         }
-        console.log("currently looking in bounding box " + i);
+            //console.log("currently looking in bounding box " + i);
         // else if finding distance from box
     }
 
@@ -102,9 +133,29 @@ EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox) {
     var self = this;
     //TODO: add logic for y coordinate
     var xOffset = boundingBox['x'] + boundingBox['w'];
-    // console.log("is " + self.currentData['gaze']['x'] + " between " + boundingBox['x'] + " and " + xOffset)
+    var yOffset = boundingBox['y'] - boundingBox['h'];
+    var inX = false;
+    var inY = false;
+    //console.log("is " + self.currentData['gaze']['x'] + " between " + boundingBox['x'] + " and " + xOffset)
     if (self.currentData['gaze']['x'] >= boundingBox['x'] && self.currentData['gaze']['x'] <= xOffset)
+        inX = true;
+    if (self.currentData['gaze']['y'] >= boundingBox['y'] && self.currentData['gaze']['y'] <= yOffset)
+        inY = true;
+    if (inX && inY)
         return true;
+    return false;
+}
+
+// initiliaze first time
+var eyeTrackingInstance = null;
+
+// TODO: remove, just for testing
+
+// create eye tracking instance as a singleton so there are not multiple eyetracking classes being used.
+function getEyeTrackingInstance() {
+    if (eyeTrackingInstance == null)
+        eyeTrackingInstance = new EyeTracking();
+    return eyeTrackingInstance;
 }
 
 //currently not using, might want it eventually
@@ -131,34 +182,4 @@ EyeTracking.prototype._constructBoundingBoxCoordinates = function(boundingBox) {
         'bottomLeft': topLeft,
         'bottomRight': topRight
     }
-}
-
-// initiliaze first time
-var eyeTrackingInstance = null;
-
-// TODO: remove, just for testing
-// getEyeTrackingInstance().setFrontendDisplay({
-//     'middleDivider': 2000
-// });
-//
-// getEyeTrackingInstance().setPanels({
-//     'leftPanel': [{
-//         'x': 0,
-//         'y': 0,
-//         'h': 1000,
-//         'w': 1000
-//     }, {
-//         'x': 1000,
-//         'y': 1000,
-//         'h': 1000,
-//         'w': 1000
-//     }],
-//     'rightPanel': []
-// });
-
-// create eye tracking instance as a singleton so there are not multiple eyetracking classes being used.
-function getEyeTrackingInstance() {
-    if (eyeTrackingInstance == null)
-        eyeTrackingInstance = new EyeTracking();
-    return eyeTrackingInstance;
 }
