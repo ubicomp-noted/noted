@@ -56,83 +56,101 @@ function genBoundingBoxes() {
 //TODO Send to eyetribe
 function currentBoundingBoxCoordinates(current){
   return {
-    "x1": current.x,
-    "x2": current.x + current.w,
-    "y1": current.y,
-    "y2": current.y + current.h,
-    "midpoint": ((current.x + current.w)/2, (current.y + current.h)/2)
+    "bottomLeft": (current.x, current.y),
+    "bottomRight": (current.x + current.w, current.y),
+    "topLeft": (current.x, current.y + current.h),
+    "topRight": (current.x + current.w, current.y + current.h)
   };
 }
 
-document.addEventListener('keydown', function(e) {
-        var annotationDivs = document.getElementsByClassName("annotationDiv");
-        var pageContainerDivs = document.getElementsByClassName("page");
-        var canvasWrapperDivs = document.getElementsByClassName("canvasWrapper");
-        var textLayerDivs = document.getElementsByClassName("textLayer");
-        switch(e.which) {
-          case 37: // left
+function leftGesture(pageContainerDivs, annotationDivs){
+  for (var i = annotationDivs.length - 1; i >= 0; i--) {
+    console.log(annotationDivs[i]);
+    annotationDivs[i].style.width = 0;
+    annotationDivs[i].innerHTML = "";
+  }
 
-            for (var i = annotationDivs.length - 1; i >= 0; i--) {
-              console.log(annotationDivs[i]);
-              annotationDivs[i].style.width = 0;
-              annotationDivs[i].innerHTML = "";
-            }
+  if(ANNOTATION_ACTIVE) {
+    for(var i = 0; i < pageContainerDivs.length; i++){
+      pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) - ANNOTATION_MARGIN) + 'px';
+    }
+  }
 
-            //for(var i = 0; i < canvasWrapperDivs.length; i++){
-            //  canvasWrapperDivs[i].style.width = div.style.width;
-            //}
-            if(ANNOTATION_ACTIVE) {
-              for(var i = 0; i < pageContainerDivs.length; i++){
-                pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) - ANNOTATION_MARGIN) + 'px';
-              }
-            }
+  for(var bb = 0; bb < BOUNDING_BOXES.length; bb++) {
+    var bb_iter = BOUNDING_BOXES[bb];
+    bb_iter.added = false;
+    i++;
+  }
+  ANNOTATION_ACTIVE = false;
+}
 
-            for(var bb = 0; bb < BOUNDING_BOXES.length; bb++) {
-              var bb_iter = BOUNDING_BOXES[bb];
-              bb_iter.added = false;
-              i++;
-            }
-            ANNOTATION_ACTIVE = false;
-            break;
+function rightGesture(pageContainerDivs, annotationDivs){
+  for(var bb = 0; bb < BOUNDING_BOXES.length; bb++) {
+    var bb_iter = BOUNDING_BOXES[bb];
+    var pageNum = bb_iter.page;
+    var bbData = bb_iter.data;
+    var added =  bb_iter.added;
+    if(!added) {
+      document.getElementById("annotationDiv" + pageNum).innerHTML += bbData;
+      bb_iter.added = true;
+    }
+    i++;
+  }
 
-          case 38: // up
-            for(var bb = 0; bb < BOUNDING_BOXES.length; bb++) {
-              var bb_iter = BOUNDING_BOXES[bb];
-              var pageNum = bb_iter.page;
-              var bbData = bb_iter.data;
-              var added =  bb_iter.added;
-              if(!added) {
-                document.getElementById("annotationDiv" + pageNum).innerHTML += bbData;
-                bb_iter.added = true;
-              }
-              i++;
-            }
-            for (var i = annotationDivs.length - 1; i >= 0; i--) {
-              console.log(annotationDivs[i]);
-              annotationDivs[i].style.width = ANNOTATION_MARGIN + 'px';
-            }
-            if (!ANNOTATION_ACTIVE) {
-              for(var i = 0; i < pageContainerDivs.length; i++){
-                pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) + ANNOTATION_MARGIN) + 'px';
-              }
-            }
-            ANNOTATION_ACTIVE = true;
-            break;
+  for (var i = annotationDivs.length - 1; i >= 0; i--) {
+    console.log(annotationDivs[i]);
+    annotationDivs[i].style.width = ANNOTATION_MARGIN + 'px';
+  }
 
-          case 39: // right
-            for(var i = 0; i < pageContainerDivs.length; i++){
-              pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) + ANNOTATION_MARGIN) + 'px';
-            }
-            ANNOTATION_ACTIVE = true;
-            break;
+  if (!ANNOTATION_ACTIVE) {
+    for(var i = 0; i < pageContainerDivs.length; i++){
+        pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) + ANNOTATION_MARGIN) + 'px';
+    }
+  }
 
-          case 40: // down
-            break;
+  ANNOTATION_ACTIVE = true;
+}
 
-          default: return; // exit this handler for other keys
-        }
-        e.preventDefault(); // prevent the default action (scroll / move caret)
-      });
+function upGesture(){
+  return;
+}
+
+function downGesture(){
+  return;
+}
+
+
+/**
+ * Handles mapping on keyboard keydowns to functions called on PDF
+ * Modify gestures to handle other inputs
+ */
+function handleInput(keycode){
+  var annotationDivs = document.getElementsByClassName("annotationDiv");
+  var pageContainerDivs = document.getElementsByClassName("page");
+  var canvasWrapperDivs = document.getElementsByClassName("canvasWrapper");
+  var textLayerDivs = document.getElementsByClassName("textLayer");
+  const gestures = {37: "left", 38: "up", 39: "right", 40: "up"};
+
+  switch(gestures[keycode]){
+    case "left":
+      leftGesture(pageContainerDivs, annotationDivs);
+      break;
+    case "right":
+      rightGesture(pageContainerDivs, annotationDivs);
+      break;
+    case "up":
+      upGesture();
+      break;
+    case "down":
+      downGesture();
+      break;
+    default:
+      return;
+  }
+  keycode.preventDefault();
+}
+
+document.addEventListener('keydown', handleInput(e));
 
 var DEFAULT_URL = 'bfs_eyetracking.pdf';
 var DEFAULT_SCALE_DELTA = 1.1;
