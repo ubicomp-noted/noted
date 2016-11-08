@@ -53,6 +53,17 @@ function genBoundingBoxes() {
   return accumulator;
 }
 
+//TODO Send to eyetribe
+function currentBoundingBoxCoordinates(current){
+  return {
+    "x1": current.x,
+    "x2": current.x + current.w,
+    "y1": current.y,
+    "y2": current.y + current.h,
+    "midpoint": ((current.x + current.w)/2, (current.y + current.h)/2)
+  };
+}
+
 document.addEventListener('keydown', function(e) {
         var annotationDivs = document.getElementsByClassName("annotationDiv");
         var pageContainerDivs = document.getElementsByClassName("page");
