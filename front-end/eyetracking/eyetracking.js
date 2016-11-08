@@ -119,9 +119,9 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
             closestBoundingBox['index'] = i;
             closestBoundingBox['boundingBox'] = boundingBoxes[i]
             closestBoundingBox['distance'] = 0;
+            //console.log("currently looking in bounding box " + i);
             break;
         }
-            //console.log("currently looking in bounding box " + i);
         // else if finding distance from box
     }
 
@@ -150,6 +150,28 @@ EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox) {
 var eyeTrackingInstance = null;
 
 // TODO: remove, just for testing
+// getEyeTrackingInstance().setFrontendDisplay({
+//     'middleDivider': 960,
+//     'screen': {
+//         'width': 1920,
+//         'height': 1080
+//     }
+// });
+//
+// getEyeTrackingInstance().setPanels({
+//     'leftPanel': [{
+//         'x': 0,
+//         'y': 0,
+//         'h': 500,
+//         'w': 960
+//     }, {
+//         'x': 0,
+//         'y': 540,
+//         'h': 500,
+//         'w': 960
+//     }],
+//     'rightPanel': []
+// });
 
 // create eye tracking instance as a singleton so there are not multiple eyetracking classes being used.
 function getEyeTrackingInstance() {
