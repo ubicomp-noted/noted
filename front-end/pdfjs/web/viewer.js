@@ -58,7 +58,6 @@ document.addEventListener('keydown', function(e) {
         var pageContainerDivs = document.getElementsByClassName("page");
         var canvasWrapperDivs = document.getElementsByClassName("canvasWrapper");
         var textLayerDivs = document.getElementsByClassName("textLayer");
-        var eyeTracking = getEyeTrackingInstance();
         switch(e.which) {
           case 37: // left
 
@@ -117,7 +116,6 @@ document.addEventListener('keydown', function(e) {
             break;
 
           case 40: // down
-            eyeTracking.getTest();
             break;
 
           default: return; // exit this handler for other keys
