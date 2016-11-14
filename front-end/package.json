@@ -13,5 +13,7 @@
     "electron-prebuilt": "^0.36.4",
     "node-ensure": "^0.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "electron-context-menu": "^0.7.0"
+  }
 }

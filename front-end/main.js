@@ -9,6 +9,7 @@ var pdfWindow = null;
 var noteWindow = null;
 
 const pdfURL = "http://andrewd.ces.clemson.edu/research/vislab/docs/BET107cr.pdf";
+ 
 
 app.on('ready', function() {
   pdfWindow = new BrowserWindow({

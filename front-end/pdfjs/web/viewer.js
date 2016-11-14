@@ -28,8 +28,9 @@
 // TODO: Replace with loading bounding boxes from files
 var fs = require('fs');
 var path = require('path');
-var exampleFilePath = path.resolve(__dirname, 'examples/bb_example.json');
-var BOUNDING_BOXES = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
+var exampleFilePath = path.resolve(__dirname, 'examples/new_schema.json');
+var file_json = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
+var BOUNDING_BOXES = file_json.annotations;
 
 
 var ANNOTATION_MARGIN = 400;
@@ -46,21 +47,11 @@ function genBoundingBoxes() {
     bb_obj.style.top = bb_iter.y + '%';
     bb_obj.style.left = bb_iter.x + '%';
     bb_obj.classList.add('boundingBox');
-    bb_obj.id = 'bb_' + i;
+    bb_obj.id = bb_iter.number;
     accumulator.push(bb_obj);
     i++;
   }
   return accumulator;
-}
-
-//TODO Send to eyetribe
-function currentBoundingBoxCoordinates(current){
-  return {
-    "bottomLeft": (current.x, current.y),
-    "bottomRight": (current.x + current.w, current.y),
-    "topLeft": (current.x, current.y + current.h),
-    "topRight": (current.x + current.w, current.y + current.h)
-  };
 }
 
 function leftGesture(pageContainerDivs, annotationDivs){
@@ -129,7 +120,7 @@ function handleInput(keycode){
   var pageContainerDivs = document.getElementsByClassName("page");
   var canvasWrapperDivs = document.getElementsByClassName("canvasWrapper");
   var textLayerDivs = document.getElementsByClassName("textLayer");
-  const gestures = {37: "left", 38: "up", 39: "right", 40: "up"};
+  const gestures = {37: "left", 38: "up", 39: "right", 40: "down"};
 
   switch(gestures[keycode]){
     case "left":
@@ -150,7 +141,7 @@ function handleInput(keycode){
   keycode.preventDefault();
 }
 
-document.addEventListener('keydown', handleInput(e));
+document.addEventListener('keydown', handleInput);
 
 var DEFAULT_URL = 'bfs_eyetracking.pdf';
 var DEFAULT_SCALE_DELTA = 1.1;
