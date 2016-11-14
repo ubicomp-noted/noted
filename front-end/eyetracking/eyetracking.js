@@ -10,8 +10,8 @@ EyeTracking = function() {
 
     // parameters
     this.eyetribe = require('eyetribe');
-    this.intervalPerMilisecond = 500;
-    this.timeTrackedMilisecond = 3000;
+    this.intervalPerMilisecond = 100;
+    this.timeTrackedMilisecond = 1000;
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
 
     // received by EyeTribe
@@ -49,6 +49,7 @@ EyeTracking.prototype.getFocusPanel = function() {
 // ---- Private Functions "hidden" to the world ----
 // set up EyeTribe and call interval logic to get updates from EyeTribe
 EyeTracking.prototype._init = function() {
+
     var self = this;
     self.eyetribe.setup();
     setInterval(function() {
@@ -105,6 +106,31 @@ EyeTracking.prototype._decideFocus = function() {
 
 EyeTracking.prototype._determineClosestBoundingBox = function() {
     var self = this;
+
+    // average gaze history
+    var gazeAvg = {
+      'x': 0,
+      'y': 0,
+      'stdevX' : 0,
+      'stdevY' : 0
+    };
+    // average
+    for (var i = 0; i < self.currentData['gazeHistory'].length; i++) {
+      var currGaze = self.currentData['gazeHistory'][i];
+      gazeAvg['x'] += currGaze['x'] / self.currentData['gazeHistory'].length;
+      gazeAvg['y'] += currGaze['y'] / self.currentData['gazeHistory'].length;
+    }
+    // stdev
+    var stdevX = 0;
+    var stdevY = 0;
+    for (var i = 0; i < self.currentData['gazeHistory'].length; i++) {
+      var currGaze = self.currentData['gazeHistory'][i];
+      stdevX += Math.pow(currGaze['x'] - gazeAvg['x'], 2) / self.currentData['gazeHistory'].length;
+      stdevY += Math.pow(currGaze['y'] - gazeAvg['y'], 2) / self.currentData['gazeHistory'].length;
+    }
+    gazeAvg['stdevX'] = Math.sqrt(stdevX);
+    gazeAvg['stdevY'] = Math.sqrt(stdevY);
+
     //get data based on user's eye focus
     var boundingBoxes = self.panels[self.currentData['panelFocus']];
     var closestBoundingBox = {
@@ -115,7 +141,7 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
     };
     for (var i = 0; i < boundingBoxes.length; i++) {
         //var coordinates = self._constructBoundingBoxCoordinates(boundingBoxes[i]);
-        if (self._isUserLookingInBoundingBox(boundingBoxes[i])) {
+        if (self._isUserLookingInBoundingBox(boundingBoxes[i], gazeAvg)) {
             closestBoundingBox['index'] = i;
             closestBoundingBox['boundingBox'] = boundingBoxes[i]
             closestBoundingBox['distance'] = 0;
@@ -129,17 +155,20 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
     self.currentData['closestBoundingBox'] = closestBoundingBox;
 }
 
-EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox) {
+EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox, gazeAvg) {
     var self = this;
+
     //TODO: add logic for y coordinate
     var xOffset = boundingBox['x'] + boundingBox['w'];
-    var yOffset = boundingBox['y'] - boundingBox['h'];
+    var yOffset = boundingBox['y'] - boundingBox['h']; // TODO: is this correct?
     var inX = false;
     var inY = false;
     //console.log("is " + self.currentData['gaze']['x'] + " between " + boundingBox['x'] + " and " + xOffset)
-    if (self.currentData['gaze']['x'] >= boundingBox['x'] && self.currentData['gaze']['x'] <= xOffset)
+    //if (self.currentData['gaze']['x'] >= boundingBox['x'] && self.currentData['gaze']['x'] <= xOffset)
+    if (gazeAvg['x'] >= boundingBox['x'] && gazeAvg['x'] <= xOffset)
         inX = true;
-    if (self.currentData['gaze']['y'] >= boundingBox['y'] && self.currentData['gaze']['y'] <= yOffset)
+    //if (self.currentData['gaze']['y'] >= boundingBox['y'] && self.currentData['gaze']['y'] <= yOffset)
+    if (gazeAvg['y'] >= boundingBox['y'] && gazeAvg['y'] <= yOffset) // TODO: if above is correct, this seems to act as if offset was added
         inY = true;
     if (inX && inY)
         return true;
