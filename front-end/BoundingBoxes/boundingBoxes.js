@@ -19,9 +19,9 @@ BoundingBoxes.prototype._init = function() {
     self.boundingBoxes = self._setup();
 };
 
-BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID, pageID){
+BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
   var boundingBox = document.getElementById(bbID);
-  var page = document.getElementById(pageID);
+  var page = document.getElementById("outerContainer");
   var boundingRect = boundingBox.getBoundingClientRect();
   var pageRect = page.getBoundingClientRect();
   return {

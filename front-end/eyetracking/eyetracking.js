@@ -10,8 +10,8 @@ EyeTracking = function() {
 
     // parameters
     this.eyetribe = require('eyetribe');
-    this.intervalPerMilisecond = 100;
-    this.timeTrackedMilisecond = 1000;
+    this.intervalPerMilisecond = 10;
+    this.timeTrackedMilisecond = 2000;
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
 
     // received by EyeTribe
@@ -185,7 +185,7 @@ EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox, gazeAv
 // initiliaze first time
 var eyeTrackingInstance = null;
 
-// TODO: remove, just for testing
+// /* TODO: remove, just for testing */
 // getEyeTrackingInstance().setFrontendDisplay({
 //     'middleDivider': 960,
 //     'screen': {
@@ -193,7 +193,7 @@ var eyeTrackingInstance = null;
 //         'height': 1080
 //     }
 // });
-//
+
 // getEyeTrackingInstance().setPanels({
 //     'leftPanel': [{
 //         'x': 0,
