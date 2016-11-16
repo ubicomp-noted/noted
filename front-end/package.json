@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "electron-context-menu": "^0.7.0",
-    "eyetribe": "git+https://github.com/coughdrop/eyetribe.git"
+    "eyetribe": "git+https://github.com/coughdrop/eyetribe.git",
+    "myo": "^2.1.1"
   }
 }
