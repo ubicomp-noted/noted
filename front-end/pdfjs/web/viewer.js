@@ -3714,7 +3714,7 @@ var PDFPageView = (function PDFPageViewClosure() {
     var div = document.createElement('div');
     div.id = 'pageContainer' + this.id;
     div.className = 'page';
-    div.style.width = Math.floor(this.viewport.width + ANNOTATION_MARGIN) + 'px';
+    div.style.width = Math.floor(this.viewport.width/* + ANNOTATION_MARGIN*/) + 'px';
     div.style.height = Math.floor(this.viewport.height) + 'px';
     div.setAttribute('data-page-number', this.id);
     this.div = div;
@@ -3749,7 +3749,7 @@ var PDFPageView = (function PDFPageViewClosure() {
       this.renderingState = RenderingStates.INITIAL;
 
       var div = this.div;
-      div.style.width = Math.floor(this.viewport.width + ANNOTATION_MARGIN) + 'px';
+      div.style.width = Math.floor(this.viewport.width/* + ANNOTATION_MARGIN*/) + 'px';
       div.style.height = Math.floor(this.viewport.height) + 'px';
 
       var childNodes = div.childNodes;
@@ -3942,7 +3942,7 @@ var PDFPageView = (function PDFPageViewClosure() {
       // Wrap the canvas so if it has a css transform for highdpi the overflow
       // will be hidden in FF.
       var canvasWrapper = document.createElement('div');
-      canvasWrapper.style.width = (parseInt(div.style.width.slice(0, -2)) - ANNOTATION_MARGIN) + 'px';
+      canvasWrapper.style.width = div.style.width;
       canvasWrapper.style.height = div.style.height;
       canvasWrapper.classList.add('canvasWrapper');
 
@@ -3953,16 +3953,7 @@ var PDFPageView = (function PDFPageViewClosure() {
       canvas.setAttribute('hidden', 'hidden');
       var isCanvasHidden = true;
 
-      var annotationDiv = document.createElement('div');
-      annotationDiv.style.width = ANNOTATION_MARGIN + 'px';
-      annotationDiv.style.height = div.style.height;
-      annotationDiv.classList.add('annotationDiv');
-      annotationDiv.id = 'annotationDiv' + this.id;
-
-
-
       canvasWrapper.appendChild(canvas);
-      this.div.appendChild(annotationDiv);
       if (this.annotationLayer && this.annotationLayer.div) {
         // annotationLayer needs to stay on top
         div.insertBefore(canvasWrapper, this.annotationLayer.div);
@@ -4027,19 +4018,8 @@ var PDFPageView = (function PDFPageViewClosure() {
           // Check if bounding box is in the page we want to append it to
         if (BOUNDING_BOXES[bbb].page == this.id) {
           boundingBoxes[bbb].addEventListener("mouseover", function () {
-            // TODO: Learn how to Javascript properly.
-            var curPage = BOUNDING_BOXES[this.id.substring(3, this.id.length)].page;
-            var annoteDiv = document.getElementById("annotationDiv" + curPage);
-            annoteDiv.innerHTML = BOUNDING_BOXES[this.id.substring(3, this.id.length)].data;
-            annoteDiv.style.width = ANNOTATION_MARGIN + 'px';
-            var pgContainer = document.getElementsByClassName("page");
-            if (!ANNOTATION_ACTIVE) {
-              for(var i = 0; i < pgContainer.length; i++){
-                pgContainer[i].style.width = (parseInt(pgContainer[i].style.width.substring(0, pgContainer[i].style.width.length - 2)) + ANNOTATION_MARGIN) + 'px';
-              }
-            }
-            ANNOTATION_ACTIVE = true;
-
+            var annotationPane = document.getElementById("annotationPane");
+            annotationPane.innerHTML = BOUNDING_BOXES[this.id - 1].data;
           });
           textLayerDiv.appendChild(boundingBoxes[bbb]);
         }
@@ -6275,6 +6255,22 @@ var PDFViewerApplication = {
 
     var container = document.getElementById('viewerContainer');
     var viewer = document.getElementById('viewer');
+    var outerContainer = document.getElementById('outerContainer');
+
+    var annotationContent = document.createElement('div');
+    annotationContent.id = 'annotationPane';
+    annotationContent.style.padding = '15px';
+
+    var annotation = document.createElement('div');
+    annotation.id = 'annotationPaneContainer';
+    annotation.style.backgroundColor = 'white';
+    annotation.style.width = '40%';
+    annotation.style.height = '100%';
+    annotation.style.float = 'right';
+
+    annotation.appendChild(annotationContent);
+    outerContainer.appendChild(annotation);
+
     this.pdfViewer = new PDFViewer({
       container: container,
       viewer: viewer,

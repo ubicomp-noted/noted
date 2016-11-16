@@ -19,10 +19,6 @@
   z-index:9999;
 }
 
-.annotationDiv {
-  float:right;
-}
-
 .textLayer {
   position: absolute;
   left: 0;
@@ -168,7 +164,6 @@
   overflow: visible;
   border: 9px solid transparent;
   background-clip: content-box;
-  border-image: url(images/shadow.png) 9 9 repeat;
   background-color: white;
 }
 
@@ -438,6 +433,7 @@ html[dir='rtl'] #sidebarContent {
 }
 
 #viewerContainer {
+  width: 60%;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
@@ -456,6 +452,7 @@ html[dir='rtl'] #viewerContainer {
 
 .toolbar {
   position: relative;
+  visibility: hidden;
   left: 0;
   right: 0;
   z-index: 9999;
@@ -468,7 +465,7 @@ html[dir='rtl'] #viewerContainer {
 
 #toolbarSidebar {
   width: 200px;
-  height: 32px;
+  height: 0px;
   background-color: #424242; /* fallback */
   background-image: url(images/texture.png),
                     linear-gradient(hsla(0,0%,30%,.99), hsla(0,0%,25%,.95));
@@ -510,6 +507,7 @@ html[dir='rtl'] #toolbarContainer, .findbar, .secondaryToolbar {
 
 #toolbarViewer {
   height: 32px;
+  visibility:hidden;
 }
 
 #loadingBar {
