@@ -3,20 +3,48 @@ var fs = require('fs');
 var path = require('path');
 
 BoundingBoxes = function() {
-
+    this.bbData = undefined;
+    this.eyeTribe = undefined;
     this.ANNOTATION_MARGIN = 400;
     this.ANNOTATION_ACTIVE = false;
 
     this.PDF = ""; //Where does this data exist?
 
-    this.boundingBoxes = undefined; 
     this._init();
+    
 };
 
 /* Public */
 BoundingBoxes.prototype._init = function() {
     var self = this;
-    self.boundingBoxes = self._setup();
+    self._setup();
+    self.eyeTribe = getEyeTrackingInstance();
+    self.eyeTribe.setFrontendDisplay({
+        'middleDivider': 960,
+        'screen': {
+            'width': 1920,
+            'height': 1080
+        }
+    });
+    getEyeTrackingInstance().setPanels({
+        'leftPanel': self.getCurrentBoundingBoxes(),
+        'rightPanel': []
+    });
+};
+
+BoundingBoxes.prototype.getCurrentBoundingBoxes = function(){
+    var self = this;
+    var totalBoundingBoxes = self.bbData;
+    console.log(totalBoundingBoxes);
+    var filtered = [];
+    var currentPageHeight = document.getElementById("outerContainer").getBoundingClientRect().height;
+    for(var i = 0; i < totalBoundingBoxes.length; i++) {
+        var current = self.getAbsoluteReferenceCoord(totalBoundingBoxes[i].number);
+        if(current.y >= 0 && (current.y + current.h) < currentPageHeight) {
+            filtered.push(current);
+        }
+    }
+    return filtered;
 };
 
 BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
@@ -78,12 +106,9 @@ BoundingBoxes.prototype.genBoundingBoxes = function() {
 /* Private */
 BoundingBoxes.prototype._setup = function() {
     //Get bounding box data, initially we will use JSON but move to database
+    var self = this;
     var exampleFilePath = path.resolve(__dirname, 'examples/new_schema.json');
-    fs.readFile(exampleFilePath, function readFilePath(err, contents){
-        if(contents){
-            this.boundingBoxes = JSON.parse(contents);
-        } else {
-            console.log("Error: " + err);
-        }
-    });
+    var file_json = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
+    self.bbData = file_json.annotations;
+    console.log(self.bbData);
 };

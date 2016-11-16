@@ -5,13 +5,16 @@ EyeTracking = function() {
     this.RIGHT_PANEL = "rightPanel";
 
     // received from PDF team
-    this.panels = null;
+    this.panels = {
+        'leftPanel' : [],
+        'rightPanel' : []
+    };
     this.frontendDisplay = null;
 
     // parameters
     this.eyetribe = require('eyetribe');
-    this.intervalPerMilisecond = 10;
-    this.timeTrackedMilisecond = 2000;
+    this.intervalPerMilisecond = 100;
+    this.timeTrackedMilisecond = 1000;
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
 
     // received by EyeTribe
@@ -36,6 +39,7 @@ EyeTracking.prototype.setFrontendDisplay = function(frontendDisplay) {
 
 EyeTracking.prototype.setPanels = function(panels) {
     this.panels = panels;
+    console.log(this.panels);
 }
 
 EyeTracking.prototype.getClosestBoundingBox = function() {
@@ -186,28 +190,6 @@ EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox, gazeAv
 var eyeTrackingInstance = null;
 
 // /* TODO: remove, just for testing */
-// getEyeTrackingInstance().setFrontendDisplay({
-//     'middleDivider': 960,
-//     'screen': {
-//         'width': 1920,
-//         'height': 1080
-//     }
-// });
-
-// getEyeTrackingInstance().setPanels({
-//     'leftPanel': [{
-//         'x': 0,
-//         'y': 0,
-//         'h': 500,
-//         'w': 960
-//     }, {
-//         'x': 0,
-//         'y': 540,
-//         'h': 500,
-//         'w': 960
-//     }],
-//     'rightPanel': []
-// });
 
 // create eye tracking instance as a singleton so there are not multiple eyetracking classes being used.
 function getEyeTrackingInstance() {
