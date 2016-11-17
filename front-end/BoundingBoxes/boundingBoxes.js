@@ -32,6 +32,7 @@ BoundingBoxes.prototype._init = function() {
     });
 };
 
+//todo make this work for whole page
 BoundingBoxes.prototype.getCurrentBoundingBoxes = function(){
     var self = this;
     var totalBoundingBoxes = self.bbData;
