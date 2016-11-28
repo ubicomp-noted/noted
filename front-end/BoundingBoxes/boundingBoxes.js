@@ -5,6 +5,7 @@ var path = require('path');
 BoundingBoxes = function() {
     this.bbData = undefined;
     this.eyeTribe = undefined;
+    this.currentPage = undefined;
     this.ANNOTATION_MARGIN = 400;
     this.ANNOTATION_ACTIVE = false;
 
@@ -15,9 +16,10 @@ BoundingBoxes = function() {
 };
 
 /* Public */
-BoundingBoxes.prototype._init = function() {
+BoundingBoxes.prototype._init = function(pdfInstance) {
     var self = this;
     self._setup();
+    self.PDF = pdfInstance;
     self.eyeTribe = getEyeTrackingInstance();
     self.eyeTribe.setFrontendDisplay({
         'middleDivider': 960,
@@ -26,13 +28,20 @@ BoundingBoxes.prototype._init = function() {
             'height': 1080
         }
     });
+    self.updateEyePanels();
+};
+
+BoundingBoxes.prototype.updateEyePanels = function() {
+    var self = this;
     getEyeTrackingInstance().setPanels({
         'leftPanel': self.getCurrentBoundingBoxes(),
         'rightPanel': []
     });
 };
 
+//todo make this work for whole page
 BoundingBoxes.prototype.getCurrentBoundingBoxes = function(){
+    console.log("Yooooo");
     var self = this;
     var totalBoundingBoxes = self.bbData;
     console.log(totalBoundingBoxes);
@@ -48,6 +57,7 @@ BoundingBoxes.prototype.getCurrentBoundingBoxes = function(){
 };
 
 BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
+  console.log("Bounding Box ID is " + bbID);
   var boundingBox = document.getElementById(bbID);
   var page = document.getElementById("outerContainer");
   var boundingRect = boundingBox.getBoundingClientRect();
@@ -59,17 +69,6 @@ BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
     "h" : boundingRect["height"]
   }
 };
-
-BoundingBoxes.prototype.getAbsolutePageCoord = function(pageID){
-  var page = document.getElementById(pageID);
-  var pageRect = page.getBoundingClientRect();
-  return {
-    "x" : pageRect["left"],
-    "y" : pageRect["top"],
-    "w" : pageRect["width"],
-    "h" : pageRect["height"]
-  }
-}
 
 BoundingBoxes.prototype.getPanels = function() {
     return {};

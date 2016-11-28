@@ -16,6 +16,8 @@ EyeTracking = function() {
     this.intervalPerMilisecond = 100;
     this.timeTrackedMilisecond = 1000;
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
+    this.stdevThreshX = 25; // TODO: we should find a way to make these numbers depend on the resolution of the display
+    this.stdevThreshY = 10;
 
     // received by EyeTribe
     this.currentData = {
@@ -110,6 +112,18 @@ EyeTracking.prototype._decideFocus = function() {
 
 EyeTracking.prototype._determineClosestBoundingBox = function() {
     var self = this;
+    var closestBoundingBox = {
+        'index': null,
+        'boundingBox': null,
+        'distance': null,
+        'panelFocus': self.currentData['panelFocus']
+    };
+
+    // if there is no gaze history, stop right away--there's no bounding boxes to be found here
+    if (self.currentData['gazeHistory'].length == 0) {
+        self.currentData['closestBoundingBox'] = closestBoundingBox;
+        return;
+    }
 
     // TODO: make Gaze average its own function
     // average gaze history
@@ -128,7 +142,6 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
         gazeAvg['y'] += currGaze['y'] / self.currentData['gazeHistory'].length;
     }
 
-    // TODO: currently not being used
     // stdev
     var stdevX = 0;
     var stdevY = 0;
@@ -142,12 +155,17 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
 
     //get data based on user's eye focus
     var boundingBoxes = self.panels[self.currentData['panelFocus']];
-    var closestBoundingBox = {
-        'index': null,
-        'boundingBox': null,
-        'distance': null,
-        'panelFocus': self.currentData['panelFocus']
-    };
+
+    // if the stdev is too high, this means that the user is looking all over the screen
+    // in this case, we should not even attempt to match a closest bounding box
+    // TODO: we should have a way of overriding this if the user has specifically asked
+    // for a bounding box via gesture control
+    if (gazeAvg['stdevX'] > stdevThreshX || gazeAvg['stdevY'] > stdevThreshY) {
+        self.currentData['closestBoundingBox'] = closestBoundingBox;
+        return;
+    }
+
+    var lookingInBoxFound = false;
     for (var i = 0; i < boundingBoxes.length; i++) {
         //var coordinates = self._constructBoundingBoxCoordinates(boundingBoxes[i]);
         if (self._isUserLookingInBoundingBox(boundingBoxes[i], gazeAvg)) {
@@ -155,9 +173,19 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
             closestBoundingBox['boundingBox'] = boundingBoxes[i]
             closestBoundingBox['distance'] = 0;
             console.log("currently looking in bounding box " + i);
+            lookingInBoxFound = true;
             break;
         }
-        // else if finding distance from box
+    }
+
+    if (!lookingInBoxFound) {
+        var distanceResult = self._computeClosestBoundingBox(boundingBoxes, gazeAvg);
+        var closestIndex = distanceResult['index'];
+        var distance = distanceResult['dist'];
+        closestBoundingBox['index'] = closestIndex;
+        closestBoundingBox['boundingBox'] = boundingBoxes[closestIndex];
+        closestBoundingBox['distance'] = distance;
+        console.log("currently looking in bounding box " + closestIndex);
     }
 
     // update current referenceNumber
@@ -184,6 +212,38 @@ EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox, gazeAv
     if (inX && inY)
         return true;
     return false;
+}
+
+EyeTracking.prototype._computeClosestBoundingBox = function(boundingBoxes, gazeAvg) {
+    var self = this;
+
+    // x coord: left is 0 px and right is infinity px
+    // y coord: top is 0 px and bottom is infinity px
+
+    var closestIndex = -1;
+    var closestDistance = Infinity;
+    for (var i = 0; i < boundingBoxes.length; i++) {
+
+        // center coordinate of the bounding box
+        var boundingBox = boundingBoxes[i];
+        var centerX = boundingBox['x'] + (boundingBox['w'] * 0.5);
+        var centerY = boundingBox['y'] + (boundingBox['h'] * 0.5);
+
+        var diffX = centerX - gazeAvg['x'];
+        var diffY = centerY - gazeAvg['y'];
+        var distance = Math.sqrt((diffX * diffX) + (diffY*diffY));
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = i;
+        }
+    }
+    var result = {
+      'index': closestIndex,
+      'dist': closestDistance
+    };
+
+    return result;
 }
 
 // initiliaze first time
