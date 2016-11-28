@@ -1,3 +1,10 @@
+/**
+TODO:
+  1. make average and standard dev private functions
+  2. correct getPoint() to use gazeAvg instead of gaze
+  3.
+*/
+
 // constructor
 EyeTracking = function() {
     //vocabulary for consistency
@@ -48,8 +55,18 @@ EyeTracking.prototype.getClosestBoundingBox = function() {
     return this.currentData['closestBoundingBox'];
 }
 
+EyeTracking.prototype.getScrollPanel = function() {
+    // TODO: give {position: top / bottom}
+    return {'position' : 'bottom'}
+}
+
 EyeTracking.prototype.getFocusPanel = function() {
     return this.currentData['panelFocus'];
+}
+
+EyeTracking.prototype.getPoint = function() {
+    // return average instead of gaze point
+    return this.currentData['gaze'];
 }
 
 // ---- Private Functions "hidden" to the world ----
@@ -126,6 +143,7 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
     }
 
     // TODO: make Gaze average its own function
+    // TODO: make gaze average outside of the closestBoundingBox
     // average gaze history
     var gazeAvg = {
         'x': 0,
