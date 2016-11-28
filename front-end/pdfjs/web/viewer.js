@@ -32,9 +32,10 @@ var exampleFilePath = path.resolve(__dirname, 'examples/new_schema.json');
 var file_json = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
 var BOUNDING_BOXES = file_json.annotations;
 
-
+var MYPDF = null;
 var ANNOTATION_MARGIN = 400;
 var ANNOTATION_ACTIVE = true;
+var _bbObject = null;
 
 function genBoundingBoxes() {
   var accumulator = [];
@@ -6277,6 +6278,7 @@ var PDFViewerApplication = {
       renderingQueue: pdfRenderingQueue,
       linkService: pdfLinkService
     });
+    MYPDF = this.pdfViewer;
     pdfRenderingQueue.setViewer(this.pdfViewer);
     pdfLinkService.setViewer(this.pdfViewer);
 
@@ -6449,6 +6451,7 @@ var PDFViewerApplication = {
       }
 
       self.initialized = true;
+      // _bbObject = new BoundingBoxes(MYPDF);
     });
   },
 
@@ -7797,6 +7800,7 @@ window.addEventListener('pagechange', function pagechange(evt) {
   document.getElementById('firstPage').disabled = (page <= 1);
   document.getElementById('lastPage').disabled = (page >= numPages);
 
+  _bbObject.updateEyePanels();
   // we need to update stats
   if (PDFJS.pdfBug && Stats.enabled) {
     var pageView = PDFViewerApplication.pdfViewer.getPageView(page - 1);
