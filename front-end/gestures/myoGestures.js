@@ -19,8 +19,6 @@ MyoGestures = function(){
   this._init();
 }
 
-
-
 MyoGestures.prototype._init = function(){
   var self = this;
   self.myo.connect('com.noted.myo');
@@ -29,13 +27,6 @@ MyoGestures.prototype._init = function(){
 
 }
 
-// MyoGestures.prototype._lockProperty = function(){
-//   var self = this;
-//   this.myo.setLockingPolicy("none");
-// }
-
-
-//
 MyoGestures.prototype._gestures = function(){
   var self = this;
   self.myo.on('pose', function(pose_name){
@@ -45,20 +36,14 @@ MyoGestures.prototype._gestures = function(){
     }
 
     if(pose_name === 'wave_out'){
-
+      // call handleInput("right")
     }
 
     if(pose_name === 'wave_in'){
-
+      // call handleInput("left");
     }
 
-    if(pose_name === 'fist'){
-
-    }
-
-    if(pose_name === 'double_tap'){
-
-    }
+    // Additional Gestures are available(fist, double_tap)
   });
 }
 
