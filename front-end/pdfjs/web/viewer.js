@@ -55,52 +55,14 @@ function genBoundingBoxes() {
   return accumulator;
 }
 
-function leftGesture(pageContainerDivs, annotationDivs){
-  for (var i = annotationDivs.length - 1; i >= 0; i--) {
-    console.log(annotationDivs[i]);
-    annotationDivs[i].style.width = 0;
-    annotationDivs[i].innerHTML = "";
-  }
-
-  if(ANNOTATION_ACTIVE) {
-    for(var i = 0; i < pageContainerDivs.length; i++){
-      pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) - ANNOTATION_MARGIN) + 'px';
-    }
-  }
-
-  for(var bb = 0; bb < BOUNDING_BOXES.length; bb++) {
-    var bb_iter = BOUNDING_BOXES[bb];
-    bb_iter.added = false;
-    i++;
-  }
-  ANNOTATION_ACTIVE = false;
+function rightGesture(closestBoundingBox) {
+  var annotationPane = document.getElementById("annotationPane");
+  annotationPane.innerHTML = closestBoundingBox.boundingBox;
 }
 
-function rightGesture(pageContainerDivs, annotationDivs){
-  for(var bb = 0; bb < BOUNDING_BOXES.length; bb++) {
-    var bb_iter = BOUNDING_BOXES[bb];
-    var pageNum = bb_iter.page;
-    var bbData = bb_iter.data;
-    var added =  bb_iter.added;
-    if(!added) {
-      document.getElementById("annotationDiv" + pageNum).innerHTML += bbData;
-      bb_iter.added = true;
-    }
-    i++;
-  }
-
-  for (var i = annotationDivs.length - 1; i >= 0; i--) {
-    console.log(annotationDivs[i]);
-    annotationDivs[i].style.width = ANNOTATION_MARGIN + 'px';
-  }
-
-  if (!ANNOTATION_ACTIVE) {
-    for(var i = 0; i < pageContainerDivs.length; i++){
-        pageContainerDivs[i].style.width = (parseInt(pageContainerDivs[i].style.width.substring(0, pageContainerDivs[i].style.width.length - 2)) + ANNOTATION_MARGIN) + 'px';
-    }
-  }
-
-  ANNOTATION_ACTIVE = true;
+function leftGesture() {
+  var annotationPane = document.getElementById("annotationPane");
+  annotationPane.innerHTML = "";
 }
 
 function upGesture(){
