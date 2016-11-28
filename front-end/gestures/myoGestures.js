@@ -26,7 +26,7 @@ MyoGestures.prototype._init = function(){
   self.myo.connect('com.noted.myo');
 
   //instantiate methods
-  self._gestures();
+
 }
 
 // MyoGestures.prototype._lockProperty = function(){
