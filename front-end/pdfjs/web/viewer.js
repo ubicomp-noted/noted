@@ -66,11 +66,12 @@ function leftGesture() {
 }
 
 function upGesture(){
-  return;
+  // Create the event
+  PDFViewerApplication.page++;
 }
 
 function downGesture(){
-  return;
+  PDFViewerApplication.page--;
 }
 
 
