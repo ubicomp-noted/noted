@@ -123,27 +123,90 @@ function topSexBuckets() {
   var numPages = PDFViewerApplication.pagesCount;
   var numTops = numPages * 2;
 
-  for (var pg = 0; pg < numPages; pg++) {
-    for (var sex = 0; sex < 6; sex++) {
-      if (top.length == 0) {
-        top[0] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
-        continue;
-      }
-      for (var topIter = 0; topIter < top.length; topIter++) {
-        if (sexBuckets[pg][sex] >= top[topIter].score) {
-          top.splice(topIter, 0, {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]});
-          break;
+  if (sexBuckets.length > 0) {
+    for (var pg = 0; pg < numPages; pg++) {
+      for (var sex = 0; sex < 6; sex++) {
+        if (top.length == 0) {
+          top[0] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+          continue;
         }
-        if (topIter == top.length - 1) {
-          top[top.length] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+        for (var topIter = 0; topIter < top.length; topIter++) {
+          if (sexBuckets[pg][sex] >= top[topIter].score) {
+            top.splice(topIter, 0, {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]});
+            break;
+          }
+          if (topIter == top.length - 1) {
+            top[top.length] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+          }
         }
       }
     }
+  } else {
+    return null;
   }
 
   top = top.slice(0, numTops);
 
+  for (var topIter = 0; topIter < top.length; topIter++) {
+    if (top[topIter].score == 0 && topIter > 0) {
+      top = top.slice(0, topIter);
+      break;
+    }
+  }
+
   return top;
+}
+
+function getRelevantPages(top) {
+  if (top) {
+    var pages = [];
+    for (var topIter = 0; topIter < top.length; topIter++) {
+      if (pages.indexOf(top[topIter].pg ) == -1) {
+        pages.push(top[topIter].pg);
+      }
+    }
+    return pages;
+  }
+  return null;
+}
+
+function extractTopSexWords() {
+  var top = topSexBuckets();
+
+  if (top) {
+    var words = [];
+    var pages = getRelevantPages(top);
+    var pgH = parseInt(document.getElementById("pageContainer1").style.height.slice(0, -2));
+    var pgW = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
+    var sexH = pgH / 3.0;
+    var sexW = pgW / 2.0;
+    for (var pIter = 0; pIter < pages.length; pIter++) {
+      var realPage = pIter + 1;
+      var pageWords = document.getElementById("pageContainer" + realPage).childNodes[1].childNodes;
+      for (var wIter = 0; wIter < pageWords.length; wIter++) {
+        if (pageWords[wIter].className == 'boundingBox') {
+          continue;
+        }
+        for (var tIter = 0; tIter < top.length; tIter++) {
+          // Get upper left corner of sextile
+          var sexHorz = (top[tIter].sexId % 2) * sexW;
+          var sexVert = Math.floor(top[tIter].sexId / 2) * sexH;
+          // Get horz/vert distance from upper left corner of word from upper left corner of sextile
+          var pWordHorzDiff = parseInt(pageWords[wIter].style.left.slice(0, -2)) - sexHorz;
+          var pWordVertDiff = parseInt(pageWords[wIter].style.top.slice(0, -2)) - sexVert;
+
+          // Check if word is in sextile. If so, add word to word list
+          if (pWordHorzDiff >= 0 && pWordHorzDiff <= sexW &&
+              pWordVertDiff >= 0 && pWordVertDiff <= sexH) {
+            words.push(pageWords[wIter].innerHTML);
+          }
+        }
+      }
+    }
+    return words;
+  }
+
+  return null;
 }
 
 window.setInterval(function(){
