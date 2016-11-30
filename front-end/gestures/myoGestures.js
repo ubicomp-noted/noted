@@ -23,7 +23,6 @@ MyoGestures.prototype._init = function(){
   var self = this;
   self.myo.connect('com.noted.myo');
 
-  //instantiate methods
 
 }
 
@@ -31,15 +30,26 @@ MyoGestures.prototype._gestures = function(){
   var self = this;
   self.myo.on('pose', function(pose_name){
     if(pose_name === 'fingers_spread'){
+      var scrollPanel = self.eyetribe.getScrollPanel().position;
+      if(scrollPanel === 'bottom'){
+
+      }
+      else if(scrollPanel === 'top'){
+
+      }
+      else{
+        console.log("Off screen, pleaes look at screen to determine which way to scroll");
+      }
       console.log("Pose: ", pose_name);
-      console.log("Eyetribe " ,self.eyetribe.getFocusPanel());
     }
 
+    // Wave_out will generate the annotations
     if(pose_name === 'wave_out'){
-      // call handleInput("right")
+      rightGesture(self.eyetribe.getClosestBoundingBox());
     }
 
     if(pose_name === 'wave_in'){
+      leftGesture();
       // call handleInput("left");
     }
 
