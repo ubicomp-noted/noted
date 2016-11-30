@@ -36,6 +36,7 @@ var MYPDF = null;
 var ANNOTATION_MARGIN = 400;
 var ANNOTATION_ACTIVE = true;
 var _bbObject = null;
+var sexBuckets = [];
 
 function genBoundingBoxes() {
   var accumulator = [];
@@ -74,6 +75,47 @@ function downGesture(){
   PDFViewerApplication.page--;
 }
 
+function initSexBuckets() {
+  for (var pg = 0; pg < PDFViewerApplication.pagesCount; pg++) {
+    sexBuckets[pg] = [];
+    for (var sex = 0; sex < 6; sex++) {
+      sexBuckets[pg][sex] = 0;
+    }
+  }
+}
+
+function scoreSexBucket() {
+  if (!_bbObject) {
+    _bbObject = new BoundingBoxes(MYPDF);
+    initSexBuckets();
+  }
+  var absPt = _bbObject.eyeTribe.getPoint();
+  var pgsInView = MYPDF._getVisiblePages().views;
+  if (pgsInView) {
+    var pgH = parseInt(document.getElementById("pageContainer1").style.height.slice(0, -2));
+    var pgW = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
+    var sexBucketH = pgH / 3.0;
+    var sexBucketW = pgW / 2.0;
+    for (var pg in pgsInView) {
+      var pgBox = MYPDF._getVisiblePages().views[pg].view.div.getBoundingClientRect();
+      var pgId = MYPDF._getVisiblePages().views[pg].id;
+      var pgDiffX = absPt.x - pgBox.left;
+      var pgDiffY = absPt.y - pgBox.top
+      // Determine if in page
+      if (pgDiffX <= pgW && pgDiffY <= pgH &&
+          pgDiffX >= 0 && pgDiffY >= 0) {
+        var sexBucketHorz = Math.floor(pgDiffX / sexBucketW);
+        var sexBucketVert = Math.floor(pgDiffY / sexBucketH);
+        var sexBucketIdx = (2 * sexBucketVert) + sexBucketHorz;
+        sexBuckets[pgId - 1][sexBucketIdx]++;
+      }
+    }
+  }
+}
+
+window.setInterval(function(){
+  scoreSexBucket();
+}, 500);
 
 /**
  * Handles mapping on keyboard keydowns to functions called on PDF
@@ -7522,6 +7564,8 @@ document.addEventListener('pagerendered', function (e) {
     pageNumberInput.classList.remove(PAGE_NUMBER_LOADING_INDICATOR);
   }
 
+  _bbObject = new BoundingBoxes(MYPDF);
+  initSexBuckets();
 }, true);
 
 document.addEventListener('textlayerrendered', function (e) {

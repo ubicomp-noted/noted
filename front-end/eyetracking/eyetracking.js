@@ -72,7 +72,8 @@ EyeTracking.prototype.getFocusPanel = function() {
 }
 
 EyeTracking.prototype.getPoint = function() {
-    return this.currentData['gazeAverage'];
+    // return this.currentData['gazeAverage'];
+    return {'stdevX': 0, 'stdevY': 0, 'x': 100, 'y': 100};
 }
 
 // ---- Private Functions "hidden" to the world ----
@@ -93,7 +94,7 @@ EyeTracking.prototype._init = function() {
             self._decideScrollPosition();
             self._determineClosestBoundingBox();
         } else {
-            console.log("off the screen");
+            //console.log("off the screen");
         }
     }, self.intervalPerMilisecond);
 
