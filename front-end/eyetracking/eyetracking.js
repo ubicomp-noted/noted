@@ -1,8 +1,9 @@
 /**
 TODO:
-  1. make average and standard dev private functions
-  2. correct getPoint() to use gazeAvg instead of gaze
-  3.
+  1. [DONE] make average and standard dev private functions
+  2. [DONE] correct getPoint() to use gazeAvg instead of gaze
+  3. [DONE] implement getScrollPanel()
+  4. give myo team example of getClosestBoundingBox
 */
 
 // constructor
@@ -10,11 +11,13 @@ EyeTracking = function() {
     //vocabulary for consistency
     this.LEFT_PANEL = "leftPanel";
     this.RIGHT_PANEL = "rightPanel";
+    this.TOP_PANEL = "top";
+    this.BOTTOM_PANEL = "bottom";
 
     // received from PDF team
     this.panels = {
-        'leftPanel' : [],
-        'rightPanel' : []
+        'leftPanel': [],
+        'rightPanel': []
     };
     this.frontendDisplay = null;
 
@@ -32,9 +35,11 @@ EyeTracking = function() {
             'x': null,
             'y': null
         },
+        'gazeAverage': null,
         'gazeHistory': [],
         'panelFocus': null,
-        'closestBoundingBox': null
+        'closestBoundingBox': null,
+        'scrollPosition' : null
     };
 
     // initialize eye tracking logic
@@ -56,8 +61,10 @@ EyeTracking.prototype.getClosestBoundingBox = function() {
 }
 
 EyeTracking.prototype.getScrollPanel = function() {
-    // TODO: give {position: top / bottom}
-    return {'position' : 'bottom'}
+    var self = this;
+    return {
+        'position': self.currentData['scrollPosition']
+    }
 }
 
 EyeTracking.prototype.getFocusPanel = function() {
@@ -65,8 +72,7 @@ EyeTracking.prototype.getFocusPanel = function() {
 }
 
 EyeTracking.prototype.getPoint = function() {
-    // return average instead of gaze point
-    return this.currentData['gaze'];
+    return this.currentData['gazeAverage'];
 }
 
 // ---- Private Functions "hidden" to the world ----
@@ -84,6 +90,7 @@ EyeTracking.prototype._init = function() {
         if (self._isLookingAtScreen()) {
             self._addGazeToHistory();
             self._decideFocus();
+            self._decideScrollPosition();
             self._determineClosestBoundingBox();
         } else {
             console.log("off the screen");
@@ -127,6 +134,30 @@ EyeTracking.prototype._decideFocus = function() {
     // console.log("_decideFocus: " + self.currentData['panelFocus'] + "\t" + self.currentData['gaze']['x'] + "\t" + self.frontendDisplay['middleDivider'])
 }
 
+// determine whether the top or the bottom of panel is currently looked at
+EyeTracking.prototype._decideScrollPosition = function() {
+    var self = this;
+    var middleYDivider = self.frontendDisplay['screen']['height'] / 2;
+    if (self.currentData['gaze']['y'] <= middleYDivider)
+        self.currentData['scrollPosition'] = self.TOP_PANEL;
+    else
+        self.currentData['scrollPosition'] = self.BOTTOM_PANEL;
+}
+
+EyeTracking.prototype._getStandardDeviation = function(gazeAvg) {
+    var self = this;
+    var stdevX = 0;
+    var stdevY = 0;
+    for (var i = 0; i < self.currentData['gazeHistory'].length; i++) {
+        var currGaze = self.currentData['gazeHistory'][i];
+        stdevX += Math.pow(currGaze['x'] - gazeAvg['x'], 2) / self.currentData['gazeHistory'].length;
+        stdevY += Math.pow(currGaze['y'] - gazeAvg['y'], 2) / self.currentData['gazeHistory'].length;
+    }
+    stdevX = Math.sqrt(stdevX);
+    stdevY = Math.sqrt(stdevY);
+    return {'stdevX' : stdevX, 'stdevY': stdevY};
+}
+
 EyeTracking.prototype._determineClosestBoundingBox = function() {
     var self = this;
     var closestBoundingBox = {
@@ -152,24 +183,17 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
         'stdevY': 0
     };
 
-    // TODO: make these private functions
-    // average
+    // calcualte average
     for (var i = 0; i < self.currentData['gazeHistory'].length; i++) {
         var currGaze = self.currentData['gazeHistory'][i];
         gazeAvg['x'] += currGaze['x'] / self.currentData['gazeHistory'].length;
         gazeAvg['y'] += currGaze['y'] / self.currentData['gazeHistory'].length;
     }
 
-    // stdev
-    var stdevX = 0;
-    var stdevY = 0;
-    for (var i = 0; i < self.currentData['gazeHistory'].length; i++) {
-        var currGaze = self.currentData['gazeHistory'][i];
-        stdevX += Math.pow(currGaze['x'] - gazeAvg['x'], 2) / self.currentData['gazeHistory'].length;
-        stdevY += Math.pow(currGaze['y'] - gazeAvg['y'], 2) / self.currentData['gazeHistory'].length;
-    }
-    gazeAvg['stdevX'] = Math.sqrt(stdevX);
-    gazeAvg['stdevY'] = Math.sqrt(stdevY);
+    // calculate standard deviation
+    standardDev = self._getStandardDeviation(gazeAvg);
+    gazeAvg['stdevX'] = standardDev['stdevX'];
+    gazeAvg['stdevY'] = standardDev['stdevY'];
 
     //get data based on user's eye focus
     var boundingBoxes = self.panels[self.currentData['panelFocus']];
@@ -178,7 +202,7 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
     // in this case, we should not even attempt to match a closest bounding box
     // TODO: we should have a way of overriding this if the user has specifically asked
     // for a bounding box via gesture control
-    if (gazeAvg['stdevX'] > stdevThreshX || gazeAvg['stdevY'] > stdevThreshY) {
+    if (gazeAvg['stdevX'] > self.stdevThreshX || gazeAvg['stdevY'] > self.stdevThreshY) {
         self.currentData['closestBoundingBox'] = closestBoundingBox;
         return;
     }
@@ -206,8 +230,9 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
         console.log("currently looking in bounding box " + closestIndex);
     }
 
-    // update current referenceNumber
+    // update current data
     self.currentData['closestBoundingBox'] = closestBoundingBox;
+    self.currentData['gazeAverage'] = gazeAvg;
 }
 
 EyeTracking.prototype._isUserLookingInBoundingBox = function(boundingBox, gazeAvg) {
@@ -249,16 +274,16 @@ EyeTracking.prototype._computeClosestBoundingBox = function(boundingBoxes, gazeA
 
         var diffX = centerX - gazeAvg['x'];
         var diffY = centerY - gazeAvg['y'];
-        var distance = Math.sqrt((diffX * diffX) + (diffY*diffY));
+        var distance = Math.sqrt((diffX * diffX) + (diffY * diffY));
 
         if (distance < closestDistance) {
-          closestDistance = distance;
-          closestIndex = i;
+            closestDistance = distance;
+            closestIndex = i;
         }
     }
     var result = {
-      'index': closestIndex,
-      'dist': closestDistance
+        'index': closestIndex,
+        'dist': closestDistance
     };
 
     return result;
@@ -268,6 +293,28 @@ EyeTracking.prototype._computeClosestBoundingBox = function(boundingBoxes, gazeA
 var eyeTrackingInstance = null;
 
 // /* TODO: remove, just for testing */
+// getEyeTrackingInstance().setFrontendDisplay({
+//     'middleDivider': 960,
+//     'screen': {
+//         'width': 1920,
+//         'height': 1080
+//     }
+// });
+//
+// getEyeTrackingInstance().setPanels({
+//     'leftPanel': [{
+//         'x': 0,
+//         'y': 0,
+//         'h': 500,
+//         'w': 960
+//     }, {
+//         'x': 0,
+//         'y': 540,
+//         'h': 500,
+//         'w': 960
+//     }],
+//     'rightPanel': []
+// });
 
 // create eye tracking instance as a singleton so there are not multiple eyetracking classes being used.
 function getEyeTrackingInstance() {
