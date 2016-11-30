@@ -28,6 +28,7 @@
 // TODO: Replace with loading bounding boxes from files
 var fs = require('fs');
 var path = require('path');
+var Typo = require('typo-js');
 var exampleFilePath = path.resolve(__dirname, 'examples/new_schema.json');
 var file_json = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
 var BOUNDING_BOXES = file_json.annotations;
@@ -180,6 +181,7 @@ function extractTopSexWords() {
     var pgW = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
     var sexH = pgH / 3.0;
     var sexW = pgW / 2.0;
+    var dictionary = new Typo("en_US");
     for (var pIter = 0; pIter < pages.length; pIter++) {
       var realPage = pIter + 1;
       var pageWords = document.getElementById("pageContainer" + realPage).childNodes[1].childNodes;
@@ -198,11 +200,18 @@ function extractTopSexWords() {
           // Check if word is in sextile. If so, add word to word list
           if (pWordHorzDiff >= 0 && pWordHorzDiff <= sexW &&
               pWordVertDiff >= 0 && pWordVertDiff <= sexH) {
-            words.push(pageWords[wIter].innerHTML);
+            if (words.indexOf(pageWords[wIter].innerHTML) == -1){
+              if (dictionary.check(pageWords[wIter].innerHTML)) {
+                words.push(pageWords[wIter].innerHTML);
+              }
+            }
           }
         }
       }
     }
+    words.sort(function(a, b){
+      return b.length - a.length;
+    });
     return words;
   }
 
