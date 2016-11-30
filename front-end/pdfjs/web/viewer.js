@@ -113,6 +113,39 @@ function scoreSexBucket() {
   }
 }
 
+// Returns 2n number of sextiles where n is the number of pages.
+// This effectively returns the top 1/3 of sextiles based on gaze
+// score.
+// Return format: [{pg, sexId, score}, {pg, sexId, score}, ...] in
+// descending order of rank
+function topSexBuckets() {
+  var top = [];
+  var numPages = PDFViewerApplication.pagesCount;
+  var numTops = numPages * 2;
+
+  for (var pg = 0; pg < numPages; pg++) {
+    for (var sex = 0; sex < 6; sex++) {
+      if (top.length == 0) {
+        top[0] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+        continue;
+      }
+      for (var topIter = 0; topIter < top.length; topIter++) {
+        if (sexBuckets[pg][sex] >= top[topIter].score) {
+          top.splice(topIter, 0, {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]});
+          break;
+        }
+        if (topIter == top.length - 1) {
+          top[top.length] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+        }
+      }
+    }
+  }
+
+  top = top.slice(0, numTops);
+
+  return top;
+}
+
 window.setInterval(function(){
   scoreSexBucket();
 }, 500);
