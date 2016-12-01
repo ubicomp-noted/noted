@@ -29,6 +29,8 @@
 var fs = require('fs');
 var path = require('path');
 var Typo = require('typo-js');
+var wordCloud = require('wordcloud');
+var $ = require('jquery');
 var exampleFilePath = path.resolve(__dirname, 'examples/new_schema.json');
 var file_json = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
 var BOUNDING_BOXES = file_json.annotations;
@@ -212,10 +214,61 @@ function extractTopSexWords() {
     words.sort(function(a, b){
       return b.length - a.length;
     });
-    return words;
+
+    var wordsWithValues = []
+    for(var i = 0; i < words.length; i++) {
+      wordsWithValues.push([words[i], words.length - i])
+    }
+
+    return wordsWithValues;
   }
 
   return null;
+}
+
+function sexCloud(){
+  displaySexCloud(adjustWordCloudPos);
+}
+
+function displaySexCloud(callback) {
+  var annotationPaneContainer = document.getElementById("annotationPaneContainer");
+  if(document.getElementById('wordCloudDiv') == null) {
+    var list = extractTopSexWords();
+    var wordCloudDiv = document.createElement('div');
+    wordCloudDiv.id = "wordCloudDiv";
+    wordCloudDiv.style.backgroundColor = 'white';
+    wordCloudDiv.style.width = '40%';
+    wordCloudDiv.style.height = '100%';
+    wordCloudDiv.style.float = 'right';
+    annotationPaneContainer.appendChild(wordCloudDiv);
+    buildWordCloud(list);
+    document.getElementById("wordCloudBtn").innerHTML = "Hide Wordcloud";
+  } else {
+    annotationPaneContainer.removeChild(document.getElementById("wordCloudDiv"));
+    document.getElementById("wordCloudBtn").innerHTML = "Display Wordcloud";
+  }
+  callback();
+}
+
+function buildWordCloud(list) {
+  wordCloud(document.getElementById('wordCloudDiv'), { 
+      list: list,  
+      weightFactor: 2
+  })
+  return;
+}
+
+function adjustWordCloudPos() {
+  var wcdElem = document.getElementById('wordCloudDiv');
+  if(wcdElem != null) {
+    for(var i = 0; i < wcdElem.childNodes.length; i++) {
+      var child = wcdElem.childNodes[i];
+      var pageWidth = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
+      if(parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) <  (1.6 * pageWidth)){
+        child.style.left = parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) + "px";
+      }
+    }
+  }
 }
 
 window.setInterval(function(){
@@ -6379,7 +6432,19 @@ var PDFViewerApplication = {
     annotation.style.height = '100%';
     annotation.style.float = 'right';
 
+    var wordCloudBtn = document.createElement('button');
+    wordCloudBtn.id = 'wordCloudBtn';
+    wordCloudBtn.style.float = 'bottom';
+    wordCloudBtn.style.display =  'block';
+    wordCloudBtn.style.width = '40%';
+    wordCloudBtn.innerHTML = "Display Wordcloud";
+    wordCloudBtn.style.position = "absolute"; 
+    wordCloudBtn.style.bottom = "0";
+    wordCloudBtn.style.height = '50px';
+    wordCloudBtn.onclick = sexCloud;
+
     annotation.appendChild(annotationContent);
+    annotation.appendChild(wordCloudBtn);
     outerContainer.appendChild(annotation);
 
     this.pdfViewer = new PDFViewer({
