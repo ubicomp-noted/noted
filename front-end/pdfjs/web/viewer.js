@@ -217,7 +217,7 @@ function extractTopSexWords() {
 
     var wordsWithValues = []
     for(var i = 0; i < words.length; i++) {
-      wordsWithValues.push([words[i], words.length - i])
+      wordsWithValues.push([words[i], i])
     }
 
     return wordsWithValues;
@@ -234,6 +234,11 @@ function displaySexCloud(callback) {
   var annotationPaneContainer = document.getElementById("annotationPaneContainer");
   if(document.getElementById('wordCloudDiv') == null) {
     var list = extractTopSexWords();
+    if(list.length > 20) {
+      list.splice(20);
+    }
+    console.log("List length " + list.length);
+    console.log(list);
     var wordCloudDiv = document.createElement('div');
     wordCloudDiv.id = "wordCloudDiv";
     wordCloudDiv.style.backgroundColor = 'white';
