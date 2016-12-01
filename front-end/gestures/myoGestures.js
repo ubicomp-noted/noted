@@ -46,7 +46,7 @@ MyoGestures.prototype._gestures = function(){
     // Wave_out will generate the annotations
     if(pose_name === 'wave_out'){
       rightGesture(self.eyetribe.getClosestBoundingBox());
-      console.log(self.eyetribe.getClosestBoundingBox());
+
     }
 
     if(pose_name === 'wave_in'){

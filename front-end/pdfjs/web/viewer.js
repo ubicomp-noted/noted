@@ -61,7 +61,7 @@ function genBoundingBoxes() {
 
 function rightGesture(closestBoundingBox) {
   var annotationPane = document.getElementById("annotationPane");
-  annotationPane.innerHTML = closestBoundingBox.boundingBox;
+  annotationPane.innerHTML = BOUNDING_BOXES[closestBoundingBox.index].data;
 }
 
 function leftGesture() {
@@ -234,16 +234,16 @@ function displaySexCloud(callback) {
   var annotationPaneContainer = document.getElementById("annotationPaneContainer");
   if(document.getElementById('wordCloudDiv') == null) {
     var list = extractTopSexWords();
-    if(list.length > 20) {
-      list.splice(20);
+    if(list.length > 40) {
+      list.splice(40);
     }
     console.log("List length " + list.length);
     console.log(list);
     var wordCloudDiv = document.createElement('div');
     wordCloudDiv.id = "wordCloudDiv";
     wordCloudDiv.style.backgroundColor = 'white';
-    wordCloudDiv.style.width = '40%';
-    wordCloudDiv.style.height = '100%';
+    wordCloudDiv.style.width = '50%';
+    wordCloudDiv.style.height = '50%';
     wordCloudDiv.style.float = 'right';
     annotationPaneContainer.appendChild(wordCloudDiv);
     buildWordCloud(list);
@@ -258,7 +258,9 @@ function displaySexCloud(callback) {
 function buildWordCloud(list) {
   wordCloud(document.getElementById('wordCloudDiv'), {
       list: list,
-      weightFactor: 2
+      weightFactor: 2,
+      gridSize: 20,
+      minSize: 15
   })
   return;
 }
@@ -270,11 +272,17 @@ function adjustWordCloudPos() {
       var child = wcdElem.childNodes[i];
       var pageWidth = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
       if(parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) <  (1.6 * pageWidth)){
-        child.style.left = parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) + "px";
+        console.log(window.innerWidth);
+        child.style.left = (parseFloat(child.style.left.slice(0, -2)) + window.innerWidth - ANNOTATION_MARGIN) + "px";
+        child.style.top = (parseFloat(child.style.top.slice(0, -2)) + (window.innerHeight / 4)) + "px";
       }
     }
   }
 }
+
+window.addEventListener('wordclouddrawn', function() {
+  adjustWordCloudPos();
+});
 
 window.setInterval(function(){
   scoreSexBucket();
