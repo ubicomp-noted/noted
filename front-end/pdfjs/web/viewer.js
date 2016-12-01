@@ -61,7 +61,7 @@ function genBoundingBoxes() {
 
 function rightGesture(closestBoundingBox) {
   var annotationPane = document.getElementById("annotationPane");
-  annotationPane.innerHTML = closestBoundingBox.boundingBox;
+  annotationPane.innerHTML = BOUNDING_BOXES[closestBoundingBox.index].data;
 }
 
 function leftGesture() {
