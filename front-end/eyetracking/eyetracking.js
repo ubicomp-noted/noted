@@ -26,8 +26,8 @@ EyeTracking = function() {
     this.intervalPerMilisecond = 100;
     this.timeTrackedMilisecond = 1000;
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
-    this.stdevThreshX = 25; // TODO: we should find a way to make these numbers depend on the resolution of the display
-    this.stdevThreshY = 10;
+    this.stdevThreshX = 1000; // TODO: we should find a way to make these numbers depend on the resolution of the display
+    this.stdevThreshY = 1000;
 
     // received by EyeTribe
     this.currentData = {
@@ -53,6 +53,7 @@ EyeTracking.prototype.setFrontendDisplay = function(frontendDisplay) {
 
 EyeTracking.prototype.setPanels = function(panels) {
     this.panels = panels;
+    console.log("$$$$$$$$");
     console.log(this.panels);
 }
 
