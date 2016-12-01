@@ -28,6 +28,9 @@
 // TODO: Replace with loading bounding boxes from files
 var fs = require('fs');
 var path = require('path');
+var Typo = require('typo-js');
+var wordCloud = require('wordcloud');
+var $ = require('jquery');
 var exampleFilePath = path.resolve(__dirname, 'examples/new_schema.json');
 var file_json = JSON.parse(fs.readFileSync(exampleFilePath, 'utf8'));
 var BOUNDING_BOXES = file_json.annotations;
@@ -36,6 +39,7 @@ var MYPDF = null;
 var ANNOTATION_MARGIN = 400;
 var ANNOTATION_ACTIVE = true;
 var _bbObject = null;
+var sexBuckets = [];
 
 function genBoundingBoxes() {
   var accumulator = [];
@@ -74,6 +78,207 @@ function downGesture(){
   PDFViewerApplication.page--;
 }
 
+function initSexBuckets() {
+  for (var pg = 0; pg < PDFViewerApplication.pagesCount; pg++) {
+    sexBuckets[pg] = [];
+    for (var sex = 0; sex < 6; sex++) {
+      sexBuckets[pg][sex] = 0;
+    }
+  }
+}
+
+function scoreSexBucket() {
+  if (!_bbObject) {
+    _bbObject = new BoundingBoxes(MYPDF);
+    initSexBuckets();
+  }
+  var absPt = _bbObject.eyeTribe.getPoint();
+  var pgsInView = MYPDF._getVisiblePages().views;
+  if (pgsInView) {
+    var pgH = parseInt(document.getElementById("pageContainer1").style.height.slice(0, -2));
+    var pgW = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
+    var sexBucketH = pgH / 3.0;
+    var sexBucketW = pgW / 2.0;
+    for (var pg in pgsInView) {
+      var pgBox = MYPDF._getVisiblePages().views[pg].view.div.getBoundingClientRect();
+      var pgId = MYPDF._getVisiblePages().views[pg].id;
+      var pgDiffX = absPt.x - pgBox.left;
+      var pgDiffY = absPt.y - pgBox.top
+      // Determine if in page
+      if (pgDiffX <= pgW && pgDiffY <= pgH &&
+          pgDiffX >= 0 && pgDiffY >= 0) {
+        var sexBucketHorz = Math.floor(pgDiffX / sexBucketW);
+        var sexBucketVert = Math.floor(pgDiffY / sexBucketH);
+        var sexBucketIdx = (2 * sexBucketVert) + sexBucketHorz;
+        sexBuckets[pgId - 1][sexBucketIdx]++;
+      }
+    }
+  }
+}
+
+// Returns 2n number of sextiles where n is the number of pages.
+// This effectively returns the top 1/3 of sextiles based on gaze
+// score.
+// Return format: [{pg, sexId, score}, {pg, sexId, score}, ...] in
+// descending order of rank
+function topSexBuckets() {
+  var top = [];
+  var numPages = PDFViewerApplication.pagesCount;
+  var numTops = numPages * 2;
+
+  if (sexBuckets.length > 0) {
+    for (var pg = 0; pg < numPages; pg++) {
+      for (var sex = 0; sex < 6; sex++) {
+        if (top.length == 0) {
+          top[0] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+          continue;
+        }
+        for (var topIter = 0; topIter < top.length; topIter++) {
+          if (sexBuckets[pg][sex] >= top[topIter].score) {
+            top.splice(topIter, 0, {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]});
+            break;
+          }
+          if (topIter == top.length - 1) {
+            top[top.length] = {'pg': pg, 'sexId': sex, 'score': sexBuckets[pg][sex]};
+          }
+        }
+      }
+    }
+  } else {
+    return null;
+  }
+
+  top = top.slice(0, numTops);
+
+  for (var topIter = 0; topIter < top.length; topIter++) {
+    if (top[topIter].score == 0 && topIter > 0) {
+      top = top.slice(0, topIter);
+      break;
+    }
+  }
+
+  return top;
+}
+
+function getRelevantPages(top) {
+  if (top) {
+    var pages = [];
+    for (var topIter = 0; topIter < top.length; topIter++) {
+      if (pages.indexOf(top[topIter].pg ) == -1) {
+        pages.push(top[topIter].pg);
+      }
+    }
+    return pages;
+  }
+  return null;
+}
+
+function extractTopSexWords() {
+  var top = topSexBuckets();
+
+  if (top) {
+    var words = [];
+    var pages = getRelevantPages(top);
+    var pgH = parseInt(document.getElementById("pageContainer1").style.height.slice(0, -2));
+    var pgW = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
+    var sexH = pgH / 3.0;
+    var sexW = pgW / 2.0;
+    var dictionary = new Typo("en_US");
+    for (var pIter = 0; pIter < pages.length; pIter++) {
+      var realPage = pIter + 1;
+      var pageWords = document.getElementById("pageContainer" + realPage).childNodes[1].childNodes;
+      for (var wIter = 0; wIter < pageWords.length; wIter++) {
+        if (pageWords[wIter].className == 'boundingBox') {
+          continue;
+        }
+        for (var tIter = 0; tIter < top.length; tIter++) {
+          // Get upper left corner of sextile
+          var sexHorz = (top[tIter].sexId % 2) * sexW;
+          var sexVert = Math.floor(top[tIter].sexId / 2) * sexH;
+          // Get horz/vert distance from upper left corner of word from upper left corner of sextile
+          var pWordHorzDiff = parseInt(pageWords[wIter].style.left.slice(0, -2)) - sexHorz;
+          var pWordVertDiff = parseInt(pageWords[wIter].style.top.slice(0, -2)) - sexVert;
+
+          // Check if word is in sextile. If so, add word to word list
+          if (pWordHorzDiff >= 0 && pWordHorzDiff <= sexW &&
+              pWordVertDiff >= 0 && pWordVertDiff <= sexH) {
+            if (words.indexOf(pageWords[wIter].innerHTML) == -1){
+              if (dictionary.check(pageWords[wIter].innerHTML)) {
+                words.push(pageWords[wIter].innerHTML);
+              }
+            }
+          }
+        }
+      }
+    }
+    words.sort(function(a, b){
+      return b.length - a.length;
+    });
+
+    var wordsWithValues = []
+    for(var i = 0; i < words.length; i++) {
+      wordsWithValues.push([words[i], i])
+    }
+
+    return wordsWithValues;
+  }
+
+  return null;
+}
+
+function sexCloud(){
+  displaySexCloud(adjustWordCloudPos);
+}
+
+function displaySexCloud(callback) {
+  var annotationPaneContainer = document.getElementById("annotationPaneContainer");
+  if(document.getElementById('wordCloudDiv') == null) {
+    var list = extractTopSexWords();
+    if(list.length > 20) {
+      list.splice(20);
+    }
+    console.log("List length " + list.length);
+    console.log(list);
+    var wordCloudDiv = document.createElement('div');
+    wordCloudDiv.id = "wordCloudDiv";
+    wordCloudDiv.style.backgroundColor = 'white';
+    wordCloudDiv.style.width = '40%';
+    wordCloudDiv.style.height = '100%';
+    wordCloudDiv.style.float = 'right';
+    annotationPaneContainer.appendChild(wordCloudDiv);
+    buildWordCloud(list);
+    document.getElementById("wordCloudBtn").innerHTML = "Hide Wordcloud";
+  } else {
+    annotationPaneContainer.removeChild(document.getElementById("wordCloudDiv"));
+    document.getElementById("wordCloudBtn").innerHTML = "Display Wordcloud";
+  }
+  callback();
+}
+
+function buildWordCloud(list) {
+  wordCloud(document.getElementById('wordCloudDiv'), { 
+      list: list,  
+      weightFactor: 2
+  })
+  return;
+}
+
+function adjustWordCloudPos() {
+  var wcdElem = document.getElementById('wordCloudDiv');
+  if(wcdElem != null) {
+    for(var i = 0; i < wcdElem.childNodes.length; i++) {
+      var child = wcdElem.childNodes[i];
+      var pageWidth = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
+      if(parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) <  (1.6 * pageWidth)){
+        child.style.left = parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) + "px";
+      }
+    }
+  }
+}
+
+window.setInterval(function(){
+  scoreSexBucket();
+}, 500);
 
 /**
  * Handles mapping on keyboard keydowns to functions called on PDF
@@ -6232,7 +6437,19 @@ var PDFViewerApplication = {
     annotation.style.height = '100%';
     annotation.style.float = 'right';
 
+    var wordCloudBtn = document.createElement('button');
+    wordCloudBtn.id = 'wordCloudBtn';
+    wordCloudBtn.style.float = 'bottom';
+    wordCloudBtn.style.display =  'block';
+    wordCloudBtn.style.width = '40%';
+    wordCloudBtn.innerHTML = "Display Wordcloud";
+    wordCloudBtn.style.position = "absolute"; 
+    wordCloudBtn.style.bottom = "0";
+    wordCloudBtn.style.height = '50px';
+    wordCloudBtn.onclick = sexCloud;
+
     annotation.appendChild(annotationContent);
+    annotation.appendChild(wordCloudBtn);
     outerContainer.appendChild(annotation);
 
     this.pdfViewer = new PDFViewer({
@@ -7522,6 +7739,8 @@ document.addEventListener('pagerendered', function (e) {
     pageNumberInput.classList.remove(PAGE_NUMBER_LOADING_INDICATOR);
   }
 
+  _bbObject = new BoundingBoxes(MYPDF);
+  initSexBuckets();
 }, true);
 
 document.addEventListener('textlayerrendered', function (e) {
