@@ -26,8 +26,8 @@ EyeTracking = function() {
     this.intervalPerMilisecond = 100;
     this.timeTrackedMilisecond = 1000;
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
-    this.stdevThreshX = 25; // TODO: we should find a way to make these numbers depend on the resolution of the display
-    this.stdevThreshY = 10;
+    this.stdevThreshX = 100; // TODO: we should find a way to make these numbers depend on the resolution of the display
+    this.stdevThreshY = 100;
 
     // received by EyeTribe
     this.currentData = {
@@ -197,7 +197,8 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
     gazeAvg['stdevY'] = standardDev['stdevY'];
 
     //get data based on user's eye focus
-    var boundingBoxes = self.panels[self.currentData['panelFocus']];
+    var boundingBoxes = self.panels[self.LEFT_PANEL];
+
 
     // if the stdev is too high, this means that the user is looking all over the screen
     // in this case, we should not even attempt to match a closest bounding box

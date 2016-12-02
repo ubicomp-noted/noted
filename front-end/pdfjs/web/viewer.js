@@ -266,8 +266,8 @@ function displaySexCloud(callback) {
 }
 
 function buildWordCloud(list) {
-  wordCloud(document.getElementById('wordCloudDiv'), { 
-      list: list,  
+  wordCloud(document.getElementById('wordCloudDiv'), {
+      list: list,
       weightFactor: 2,
       gridSize: 20,
       minSize: 15
@@ -6476,7 +6476,7 @@ var PDFViewerApplication = {
     wordCloudBtn.style.display =  'block';
     wordCloudBtn.style.width = '40%';
     wordCloudBtn.innerHTML = "Display Wordcloud";
-    wordCloudBtn.style.position = "absolute"; 
+    wordCloudBtn.style.position = "absolute";
     wordCloudBtn.style.bottom = "0";
     wordCloudBtn.style.height = '50px';
     wordCloudBtn.onclick = sexCloud;
