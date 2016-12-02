@@ -78,6 +78,16 @@ function downGesture(){
   PDFViewerApplication.page--;
 }
 
+function greyOut() {
+  var greyOutDiv = document.getElementById("greyOutDiv");
+  greyOutDiv.style.opacity = 0.95;
+}
+
+function restoreGreyOut() {
+  var greyOutDiv = document.getElementById("greyOutDiv");
+  greyOutDiv.style.opacity = 0.0;
+}
+
 function initSexBuckets() {
   for (var pg = 0; pg < PDFViewerApplication.pagesCount; pg++) {
     sexBuckets[pg] = [];
@@ -6434,6 +6444,21 @@ var PDFViewerApplication = {
     var viewer = document.getElementById('viewer');
     var outerContainer = document.getElementById('outerContainer');
 
+    var greyOutDiv = document.createElement('div');
+    greyOutDiv.id = 'greyOutDiv';
+    greyOutDiv.style.height = '100%';
+    greyOutDiv.style.width = '100%';
+    greyOutDiv.style.zIndex = 99999;
+    greyOutDiv.style.backgroundColor = 'lightgrey';
+    greyOutDiv.style.position = 'absolute';
+    greyOutDiv.style.left = '0px';
+    greyOutDiv.style.top = '0px';
+    greyOutDiv.style.opacity = 0.0;
+    greyOutDiv.style.textAlign = 'center';
+    greyOutDiv.style.verticalAlign = 'middle';
+    greyOutDiv.style.transition = 'all 1s';
+    greyOutDiv.innerHTML = '<div style=\"position:relative;top:20%\"><h1> Keep focused, you could do it! </h1></div>';
+
     var annotationContent = document.createElement('div');
     annotationContent.id = 'annotationPane';
     annotationContent.style.padding = '15px';
@@ -6459,6 +6484,7 @@ var PDFViewerApplication = {
     annotation.appendChild(annotationContent);
     annotation.appendChild(wordCloudBtn);
     outerContainer.appendChild(annotation);
+    container.appendChild(greyOutDiv);
 
     this.pdfViewer = new PDFViewer({
       container: container,
