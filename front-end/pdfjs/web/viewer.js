@@ -280,6 +280,21 @@ function adjustWordCloudPos() {
   }
 }
 
+function toggleOpacityLayer(){
+  if(document.getElementById('distractionDiv') == null) {
+    var distractionDiv = document.createElement('div');
+    distractionDiv.id = "distractionDiv";
+    distractionDiv.style.backgroundColor = 'black';
+    distractionDiv.style.width = '100%';
+    distractionDiv.style.height = '100%';
+    distractionDiv.style.position = 'absolute';
+    distractionDiv.style.opacity = ".9";
+    document.getElementById("outerContainer").appendChild(distractionDiv);
+  } else {
+    document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
+  }
+}
+
 window.addEventListener('wordclouddrawn', function() {
   adjustWordCloudPos();
 });
