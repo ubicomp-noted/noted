@@ -28,6 +28,7 @@ EyeTracking = function() {
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
     this.stdevThreshX = 100; // TODO: we should find a way to make these numbers depend on the resolution of the display
     this.stdevThreshY = 100;
+    this.greyOutTimeMS = 3000;
 
     // received by EyeTribe
     this.currentData = {
@@ -39,7 +40,8 @@ EyeTracking = function() {
         'gazeHistory': [],
         'panelFocus': null,
         'closestBoundingBox': null,
-        'scrollPosition' : null
+        'scrollPosition' : null,
+        'timeOffScreen' : 0
     };
 
     // initialize eye tracking logic
@@ -89,13 +91,16 @@ EyeTracking.prototype._init = function() {
             'y': data.gaze_y
         };
         if (self._isLookingAtScreen()) {
+            self.currentData['timeOffScreen'] = 0;
             self._addGazeToHistory();
             self._decideFocus();
             self._decideScrollPosition();
             self._determineClosestBoundingBox();
         } else {
             //console.log("off the screen");
+            self.currentData['timeOffScreen'] = self.currentData['timeOffScreen'] + self.intervalPerMilisecond;
         }
+        toggleOpacityLayer(self.currentData['timeOffScreen'] >= self.greyOutTimeMS);
     }, self.intervalPerMilisecond);
 
 }

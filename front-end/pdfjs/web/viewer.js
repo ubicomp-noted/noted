@@ -81,6 +81,7 @@ function downGesture(){
 function greyOut() {
   var greyOutDiv = document.getElementById("greyOutDiv");
   greyOutDiv.style.opacity = 0.95;
+  console.log("grey out called");
 }
 
 function restoreGreyOut() {
@@ -290,8 +291,8 @@ function adjustWordCloudPos() {
   }
 }
 
-function toggleOpacityLayer(){
-  if(document.getElementById('distractionDiv') == null) {
+function toggleOpacityLayer(greyOut){
+  if(greyOut) {
     var distractionDiv = document.createElement('div');
     distractionDiv.id = "distractionDiv";
     distractionDiv.style.backgroundColor = 'black';
@@ -300,7 +301,7 @@ function toggleOpacityLayer(){
     distractionDiv.style.position = 'absolute';
     distractionDiv.style.opacity = ".9";
     document.getElementById("outerContainer").appendChild(distractionDiv);
-  } else {
+  } else if (document.getElementById("distractionDiv") != null) {
     document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
   }
 }
