@@ -80,7 +80,7 @@ function downGesture(){
 
 
 function toggleOpacityLayer(greyOut, debug){
-  var debug = (typeof debug !== 'undefined') ?  debug : true;
+  var debug = (typeof debug !== 'undefined') ?  debug : false;
   if(!debug) {
     if(greyOut) {
       var distractionDiv = document.createElement('div');
