@@ -78,6 +78,28 @@ function downGesture(){
   PDFViewerApplication.page--;
 }
 
+
+function toggleOpacityLayer(greyOut, debug){
+  var debug = (typeof debug !== 'undefined') ?  debug : true;
+  if(!debug) {
+    if(greyOut) {
+      var distractionDiv = document.createElement('div');
+      distractionDiv.id = "distractionDiv";
+      distractionDiv.style.backgroundColor = 'lightgrey';
+      distractionDiv.style.width = '100%';
+      distractionDiv.style.height = '100%';
+      distractionDiv.style.position = 'absolute';
+      distractionDiv.style.opacity = ".9";
+      distractionDiv.style.textAlign = 'center';
+      distractionDiv.style.verticalAlign = 'middle';
+      distractionDiv.innerHTML = '<div style=\"position:relative;top:20%\"><h1> Keep focused, you could do it! </h1></div>';
+      document.getElementById("outerContainer").appendChild(distractionDiv);
+    } else if (document.getElementById("distractionDiv") != null) {
+        document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
+    }
+  }
+}
+
 function greyOut() {
   var greyOutDiv = document.getElementById("greyOutDiv");
   greyOutDiv.style.opacity = 0.95;
@@ -288,21 +310,6 @@ function adjustWordCloudPos() {
         child.style.top = (parseFloat(child.style.top.slice(0, -2)) + (window.innerHeight / 4)) + "px";
       }
     }
-  }
-}
-
-function toggleOpacityLayer(greyOut){
-  if(greyOut) {
-    var distractionDiv = document.createElement('div');
-    distractionDiv.id = "distractionDiv";
-    distractionDiv.style.backgroundColor = 'black';
-    distractionDiv.style.width = '100%';
-    distractionDiv.style.height = '100%';
-    distractionDiv.style.position = 'absolute';
-    distractionDiv.style.opacity = ".9";
-    document.getElementById("outerContainer").appendChild(distractionDiv);
-  } else if (document.getElementById("distractionDiv") != null) {
-    document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
   }
 }
 
