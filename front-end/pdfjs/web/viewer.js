@@ -97,6 +97,8 @@ function toggleOpacityLayer(greyOut, debug){
     } else if (!greyOut && document.getElementById("distractionDiv") != null) {
         document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
     } 
+  } else if (debug && document.getElementById("distractionDiv") != null) {
+    document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
   }
 }
 
@@ -8039,7 +8041,10 @@ window.addEventListener('pagechange', function pagechange(evt) {
   document.getElementById('firstPage').disabled = (page <= 1);
   document.getElementById('lastPage').disabled = (page >= numPages);
 
-  _bbObject.updateEyePanels();
+  if(_bbObject) {
+    _bbObject.updateEyePanels();
+  }
+
   // we need to update stats
   if (PDFJS.pdfBug && Stats.enabled) {
     var pageView = PDFViewerApplication.pdfViewer.getPageView(page - 1);

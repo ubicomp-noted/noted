@@ -59,14 +59,24 @@ BoundingBoxes.prototype.getCurrentBoundingBoxes = function(){
 BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
   console.log("Bounding Box ID is " + bbID);
   var boundingBox = document.getElementById(bbID);
-  var page = document.getElementById("outerContainer");
-  var boundingRect = boundingBox.getBoundingClientRect();
-  var pageRect = page.getBoundingClientRect();
-  return {
-    "x" : boundingRect["left"] - pageRect["left"],
-    "y" : boundingRect["top"]  - pageRect["top"],
-    "w" : boundingRect["width"],
-    "h" : boundingRect["height"]
+  if(boundingBox) {
+    var page = document.getElementById("outerContainer");
+    var boundingRect = boundingBox.getBoundingClientRect();
+    var pageRect = page.getBoundingClientRect();
+    return {
+        "x" : boundingRect["left"] - pageRect["left"],
+        "y" : boundingRect["top"]  - pageRect["top"],
+        "w" : boundingRect["width"],
+        "h" : boundingRect["height"]
+    }
+  } else {
+    return {
+        "x" : -1,
+        "y" : -1,
+        "w" : -1,
+        "h" : -1,
+        "error" : "Bounding box was not detected"
+    }
   }
 };
 
