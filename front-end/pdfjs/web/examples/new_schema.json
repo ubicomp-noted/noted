@@ -18,29 +18,54 @@
         },
         {
             "number": "2", 
-            "x": 55.5,
-            "y": 78.5,
+            "x": 54.5,
+            "y": 16,
+            "w": 13,
+            "h": 2,
+            "page": 3,
+            "annotationName": "Snodderly, Kagan, and Gur",
+            "annotationYear": "2001",
+            "annotation": "",
+            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
+            "data": "<div style='z-index:9999; position:relative;'><div style='padding-right:30px; padding-top:100px;'><h1>Clemson University</h1></div><br><iframe id='map_canvas1'src='https://www.google.com/maps/embed/v1/place?q=Clemson+University&key=AIzaSyAN0om9mFmy1QN6Wf54tXAowK4eT0ZUPrU' width='500' height='300' frameborder='0' style='border: 0'></iframe></div>"
+        },       
+        {
+            "number": "3",
+            "x": 9,
+            "y": 66.5,
             "w": 36,
             "h": 2,
+            "page": 2,
+            "annotationName": "Thomas Jones",
+            "annotationYear": "2001",
+            "annotation": "",
+            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
+            "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Asaad,Rainer, & Miller, 2000</h1> <br> <p>This paper reviews the literature on eye movements from the standpoint of automatic control systems. Some general reference to the neurophysiology and neuroanatomy of the oculomotor system is made, but the emphasis is upon those interdisciplinary studies which, either qualitatively or quantitatively, describe eye movements within the framework of control systems theory. Reviewed are the four major subdivisions of eye movement control: the saccadic, the smooth pursuit, the vergence, and the vestibular systems. Analytical descriptions of the mechanics of the eyeball, orbit, and extraocular muscles, which are common to all these systems, are also reviewed.</p></div>"
+    },
+    {
+            "number": "4", 
+            "x": 54.5,
+            "y": 16,
+            "w": 13,
+            "h": 2,
+            "page": 4,
+            "annotationName": "Snodderly, Kagan, and Gur",
+            "annotationYear": "2001",
+            "annotation": "",
+            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
+            "data": "<div style='z-index:9999; position:relative;'><div style='padding-right:30px; padding-top:100px;'><h1>Graph</h1></div><br><iframe src='https://plot.ly/~RPlotBot/501.embed'height='600' width='100%'scrolling='no' seamless='seamless'frameBorder='0'></iframe></div>"
+    },
+    {
+            "number": "5", 
+            "x": 53.5,
+            "y": 28,
+            "w": 34.5,
+            "h": 13,
             "page": 1,
             "annotationName": "Snodderly, Kagan, and Gur",
             "annotationYear": "2001",
             "annotation": "",
             "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
-            "data": "<div style=\"padding-right:30px; padding-top:100px;\"><h1>Snodderly, Kagan, and Gur(2001)</h1></div><br><img src=\"http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg\"/>"
-
-        },         
-        {
-            "number": "3",
-            "x": 25.5,
-            "y": 38.5,
-            "w": 36,
-            "h": 2,
-            "page": 2,
-            "annotationName": "Snodderly, Kagan, and Gur",
-            "annotationYear": "2001",
-            "annotation": "",
-            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
-            "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Asaad,Rainer, & Miller, 2000</h1> <br> <p>This paper reviews the literature on eye movements from the standpoint of automatic control systems. Some general reference to the neurophysiology and neuroanatomy of the oculomotor system is made, but the emphasis is upon those interdisciplinary studies which, either qualitatively or quantitatively, describe eye movements within the framework of control systems theory. Reviewed are the four major subdivisions of eye movement control: the saccadic, the smooth pursuit, the vergence, and the vestibular systems. Analytical descriptions of the mechanics of the eyeball, orbit, and extraocular muscles, which are common to all these systems, are also reviewed.</p></div>"
+            "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Gaze Contingent</h1> <br> <p>The gaze-contingency paradigm is a general term for techniques allowing a computer screen display to change in function depending on where the viewer is looking. Gaze-contingent techniques are part of the eye movement field of study in psychology. (Wikipedia)</p></div>"
     }]
 }

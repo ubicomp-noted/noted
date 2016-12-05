@@ -23,13 +23,26 @@ MyoGestures.prototype._init = function(){
   var self = this;
   self.myo.connect('com.noted.myo');
 
+  // self._gestures();
+  // self._checkConnection();
 
+  //self.myo.setLockingPolicy("none");
+  //self.myo.unlock("hold");
+
+}
+
+MyoGestures.prototype._checkConnection = function(){
+  var self = this;
+  self.myo.on('connected', function(){
+    self.myo.setLockingPolicy("none");
+  });
 }
 
 MyoGestures.prototype._gestures = function(){
   var self = this;
   self.myo.on('pose', function(pose_name){
     if(pose_name === 'fist'){
+      // self.myo.setLockingPolicy("none");
       var scrollPanel = self.eyetribe.getScrollPanel().position;
       if(scrollPanel === 'bottom'){
         upGesture();
@@ -60,6 +73,7 @@ MyoGestures.prototype._gestures = function(){
 
 var myoInstance = null;
 getMyoInstance()._gestures();
+getMyoInstance()._checkConnection();
 
 
 function getMyoInstance(){

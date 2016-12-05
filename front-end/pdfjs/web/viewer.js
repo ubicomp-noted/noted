@@ -51,6 +51,7 @@ function genBoundingBoxes() {
     bb_obj.style.height = bb_iter.h + '%';
     bb_obj.style.top = bb_iter.y + '%';
     bb_obj.style.left = bb_iter.x + '%';
+    bb_obj.style.position = "relative";
     bb_obj.classList.add('boundingBox');
     bb_obj.id = bb_iter.number;
     accumulator.push(bb_obj);
@@ -61,7 +62,10 @@ function genBoundingBoxes() {
 
 function rightGesture(closestBoundingBox) {
   var annotationPane = document.getElementById("annotationPane");
-  annotationPane.innerHTML = BOUNDING_BOXES[closestBoundingBox.index].data;
+  if(closestBoundingBox) {
+    var obj = BOUNDING_BOXES[closestBoundingBox.index];
+    annotationPane.innerHTML = obj.data;
+  }  
 }
 
 function leftGesture() {
@@ -221,7 +225,15 @@ function extractTopSexWords() {
     var dictionary = new Typo("en_US");
     for (var pIter = 0; pIter < pages.length; pIter++) {
       var realPage = pIter + 1;
-      var pageWords = document.getElementById("pageContainer" + realPage).childNodes[1].childNodes;
+      var page = document.getElementById("pageContainer" + realPage);
+      var pageNodes = page.childNodes[1];
+      while(pageNodes == null){
+        realPage++;
+        if(realPage > PDFViewerApplication.pagesCount)
+          break;
+        pageNodes = document.getElementById("pageContainer" + realPage).childNodes[1];
+      }
+      var pageWords = pageNodes.childNodes;
       for (var wIter = 0; wIter < pageWords.length; wIter++) {
         if (pageWords[wIter].className == 'boundingBox') {
           continue;
@@ -262,13 +274,24 @@ function extractTopSexWords() {
 }
 
 function sexCloud(){
-  displaySexCloud(adjustWordCloudPos);
+  displaySexCloud();
 }
 
-function displaySexCloud(callback) {
+function filterSexWords(sexWords) {
+  var filtered = [];
+  for(var i = 0; i < sexWords.length; i++){
+    var current = sexWords[i];
+    if(filtered.indexOf(current) <= -1){
+      filtered.push(current);
+    }
+  }
+  return filtered;
+}
+
+function displaySexCloud() {
   var annotationPaneContainer = document.getElementById("annotationPaneContainer");
   if(document.getElementById('wordCloudDiv') == null) {
-    var list = extractTopSexWords();
+    var list = filterSexWords(extractTopSexWords());
     if(list.length > 40) {
       list.splice(40);
     }
@@ -287,16 +310,19 @@ function displaySexCloud(callback) {
     annotationPaneContainer.removeChild(document.getElementById("wordCloudDiv"));
     document.getElementById("wordCloudBtn").innerHTML = "Display Wordcloud";
   }
-  callback();
 }
 
 function buildWordCloud(list) {
-  wordCloud(document.getElementById('wordCloudDiv'), {
+  if(list.length > 0) {
+    wordCloud(document.getElementById('wordCloudDiv'), {
       list: list,
       weightFactor: 2,
       gridSize: 20,
       minSize: 15
-  })
+    })
+  } else {
+    document.getElementById('wordCloudDiv').innerHTML = "<h1>Error performing gaze analysis, keep reading and try again!</h1>";
+  }
   return;
 }
 
@@ -307,9 +333,10 @@ function adjustWordCloudPos() {
       var child = wcdElem.childNodes[i];
       var pageWidth = parseInt(document.getElementById("pageContainer1").style.width.slice(0, -2));
       if(parseFloat(child.style.left.slice(0, -2)) + (1.25 * pageWidth) <  (1.6 * pageWidth)){
-        console.log(window.innerWidth);
         child.style.left = (parseFloat(child.style.left.slice(0, -2)) + window.innerWidth - ANNOTATION_MARGIN) + "px";
         child.style.top = (parseFloat(child.style.top.slice(0, -2)) + (window.innerHeight / 4)) + "px";
+      } else{
+        console.log(child.innerHTML);
       }
     }
   }
@@ -4226,10 +4253,14 @@ var PDFPageView = (function PDFPageViewClosure() {
 
       // Append bounding boxes
       var boundingBoxes = genBoundingBoxes();
+      console.log(BOUNDING_BOXES);
       for (var bbb = 0; bbb < BOUNDING_BOXES.length; bbb++) {
           // Check if bounding box is in the page we want to append it to
         if (BOUNDING_BOXES[bbb].page == this.id) {
+          console.log(bbb + "\t" + this.id);
+          console.log(boundingBoxes[bbb]);
           boundingBoxes[bbb].addEventListener("mouseover", function () {
+            console.log(bbb + "\t hi" + this.id);
             var annotationPane = document.getElementById("annotationPane");
             annotationPane.innerHTML = BOUNDING_BOXES[this.id - 1].data;
           });
