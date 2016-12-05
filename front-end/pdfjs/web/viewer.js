@@ -82,7 +82,7 @@ function downGesture(){
 function toggleOpacityLayer(greyOut, debug){
   var debug = (typeof debug !== 'undefined') ?  debug : false;
   if(!debug) {
-    if(greyOut) {
+    if(greyOut && document.getElementById("distractionDiv") == null) {
       var distractionDiv = document.createElement('div');
       distractionDiv.id = "distractionDiv";
       distractionDiv.style.backgroundColor = 'lightgrey';
@@ -94,9 +94,9 @@ function toggleOpacityLayer(greyOut, debug){
       distractionDiv.style.verticalAlign = 'middle';
       distractionDiv.innerHTML = '<div style=\"position:relative;top:20%\"><h1> Keep focused, you could do it! </h1></div>';
       document.getElementById("outerContainer").appendChild(distractionDiv);
-    } else if (document.getElementById("distractionDiv") != null) {
+    } else if (!greyOut && document.getElementById("distractionDiv") != null) {
         document.getElementById("outerContainer").removeChild(document.getElementById("distractionDiv"));
-    }
+    } 
   }
 }
 

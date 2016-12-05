@@ -14,6 +14,9 @@ EyeTracking = function() {
     this.TOP_PANEL = "top";
     this.BOTTOM_PANEL = "bottom";
 
+    // testing only variable to turn off eyetracking
+    this.isGreyOutAvailable = true;
+
     // received from PDF team
     this.panels = {
         'leftPanel': [],
@@ -28,13 +31,14 @@ EyeTracking = function() {
     this.gazeHistorySize = this.timeTrackedMilisecond / this.intervalPerMilisecond;
     this.stdevThreshX = 100; // TODO: we should find a way to make these numbers depend on the resolution of the display
     this.stdevThreshY = 100;
-    this.greyOutTimeMS = 3000;
+    this.greyOutTimeMS = 1500;
 
     // received by EyeTribe
     this.currentData = {
         'gaze': {
             'x': null,
-            'y': null
+            'y': null,
+            'state' : null
         },
         'gazeAverage': null,
         'gazeHistory': [],
@@ -81,26 +85,28 @@ EyeTracking.prototype.getPoint = function() {
 // ---- Private Functions "hidden" to the world ----
 // set up EyeTribe and call interval logic to get updates from EyeTribe
 EyeTracking.prototype._init = function() {
-
     var self = this;
     self.eyetribe.setup();
     setInterval(function() {
         var data = self.eyetribe.ping();
         self.currentData.gaze = {
             'x': data.gaze_x,
-            'y': data.gaze_y
+            'y': data.gaze_y,
+            'state' : data.gaze_state
         };
         if (self._isLookingAtScreen()) {
-            self.currentData['timeOffScreen'] = 0;
             self._addGazeToHistory();
             self._decideFocus();
             self._decideScrollPosition();
             self._determineClosestBoundingBox();
-        } else {
-            //console.log("off the screen");
+        } 
+
+        if (self._isLookingAtScreen() && self.currentData.gaze.state != "not_tracking") {
+            self.currentData['timeOffScreen'] = 0;
+        }else {
             self.currentData['timeOffScreen'] = self.currentData['timeOffScreen'] + self.intervalPerMilisecond;
         }
-        toggleOpacityLayer(self.currentData['timeOffScreen'] >= self.greyOutTimeMS);
+        toggleOpacityLayer(self.currentData['timeOffScreen'] >= self.greyOutTimeMS, !self.isGreyOutAvailable);
     }, self.intervalPerMilisecond);
 
 }
@@ -124,7 +130,7 @@ EyeTracking.prototype._isLookingAtScreen = function() {
         isLookingAtScreen = false; // the gaze is not init
     } else if (self.currentData['gaze']['x'] < 0 || self.currentData['gaze']['y'] < 0) {
         isLookingAtScreen = false; // the gaze is off the to the left or above the screen
-    } else if (self.currentData['gaze']['x'] > self.frontendDisplay['screen']['x'] || self.currentData['gaze']['y'] > self.frontendDisplay['screen']['y']) {
+    } else if (self.currentData['gaze']['x'] > self.frontendDisplay['screen']['width'] || self.currentData['gaze']['y'] > self.frontendDisplay['screen']['height']) {
         isLookingAtScreen = false; // the gaze is off to the right or below the screen
     }
     return isLookingAtScreen;
