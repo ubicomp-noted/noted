@@ -78,8 +78,8 @@ EyeTracking.prototype.getFocusPanel = function() {
 }
 
 EyeTracking.prototype.getPoint = function() {
-    // return this.currentData['gazeAverage'];
-    return {'stdevX': 0, 'stdevY': 0, 'x': 100, 'y': 100};
+    return this.currentData['gazeAverage'];
+    //return {'stdevX': 0, 'stdevY': 0, 'x': 100, 'y': 100};
 }
 
 // ---- Private Functions "hidden" to the world ----
@@ -237,8 +237,9 @@ EyeTracking.prototype._determineClosestBoundingBox = function() {
         var distanceResult = self._computeClosestBoundingBox(boundingBoxes, gazeAvg);
         var closestIndex = distanceResult['index'];
         var distance = distanceResult['dist'];
+        var localIndex = distanceResult['local_index']
         closestBoundingBox['index'] = closestIndex;
-        closestBoundingBox['boundingBox'] = boundingBoxes[closestIndex];
+        closestBoundingBox['boundingBox'] = boundingBoxes[localIndex];
         closestBoundingBox['distance'] = distance;
         console.log("currently looking in bounding box " + closestIndex);
     }
@@ -295,9 +296,11 @@ EyeTracking.prototype._computeClosestBoundingBox = function(boundingBoxes, gazeA
         }
     }
     var result = {
-        'index': closestIndex,
-        'dist': closestDistance
+        'index': boundingBoxes[closestIndex].id,
+        'dist': closestDistance,
+        'local_index': closestIndex
     };
+    //console.log("closest bounding box " + closestIndex);
 
     return result;
 }

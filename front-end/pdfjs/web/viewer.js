@@ -290,6 +290,7 @@ function filterSexWords(sexWords) {
 
 function displaySexCloud() {
   var annotationPaneContainer = document.getElementById("annotationPaneContainer");
+  document.getElementById("annotationPane").innerHTML = "";
   if(document.getElementById('wordCloudDiv') == null) {
     var list = filterSexWords(extractTopSexWords());
     if(list.length > 40) {
@@ -308,7 +309,7 @@ function displaySexCloud() {
     document.getElementById("wordCloudBtn").innerHTML = "Hide Wordcloud";
   } else {
     annotationPaneContainer.removeChild(document.getElementById("wordCloudDiv"));
-    document.getElementById("wordCloudBtn").innerHTML = "Display Wordcloud";
+    document.getElementById("wordCloudBtn").innerHTML = "Concepts for Review";
   }
 }
 
@@ -6531,7 +6532,7 @@ var PDFViewerApplication = {
     wordCloudBtn.style.float = 'bottom';
     wordCloudBtn.style.display =  'block';
     wordCloudBtn.style.width = '40%';
-    wordCloudBtn.innerHTML = "Display Wordcloud";
+    wordCloudBtn.innerHTML = "Concepts to Review";
     wordCloudBtn.style.position = "absolute";
     wordCloudBtn.style.bottom = "0";
     wordCloudBtn.style.height = '50px';

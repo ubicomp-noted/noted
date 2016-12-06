@@ -67,7 +67,8 @@ BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
         "x" : boundingRect["left"] - pageRect["left"],
         "y" : boundingRect["top"]  - pageRect["top"],
         "w" : boundingRect["width"],
-        "h" : boundingRect["height"]
+        "h" : boundingRect["height"],
+        "id": bbID
     }
   } else {
     return {
@@ -75,6 +76,7 @@ BoundingBoxes.prototype.getAbsoluteReferenceCoord = function(bbID){
         "y" : -1,
         "w" : -1,
         "h" : -1,
+        "id": -1,
         "error" : "Bounding box was not detected"
     }
   }

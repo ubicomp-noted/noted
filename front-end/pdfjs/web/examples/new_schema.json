@@ -4,7 +4,7 @@
     "author": "Andrew T. Duchowski",
     "annotations" : [
         {
-            "number": "1",
+            "number": "0",
             "x": 55.5,
             "y": 78.5,
             "w": 36,
@@ -17,9 +17,9 @@
             "data": "<div style=\"padding:20px\"><h1>Robinson (1968)</h1> <br> This paper reviews the literature on eye movements from the standpoint of automatic control systems. Some general reference to the neurophysiology and neuroanatomy of the oculomotor system is made, but the emphasis is upon those interdisciplinary studies which, either qualitatively or quantitatively, describe eye movements within the framework of control systems theory. Reviewed are the four major subdivisions of eye movement control: the saccadic, the smooth pursuit, the vergence, and the vestibular systems. Analytical descriptions of the mechanics of the eyeball, orbit, and extraocular muscles, which are common to all these systems, are also reviewed. <br><br> <h1>Finlay and Walker (1999)</h1> <br> During active vision, the eyes continually scan the visual environment using saccadic scanning movements. This target article presents an information processing model for the control of these movements, with some close parallels to established physiological processes in the oculomotor system. Two separate pathways are concerned with the spatial and the temporal programming of the movement. In the temporal pathway there is spatially distributed coding and the saccade target is selected from a salience map. Both pathways descend through a hierarchy of levels, the lower ones operating automatically. Visual onsets have automatic access to the eye control system via the lower levels. Various centres in each pathway are interconnected via reciprocal inhibition. The model accounts for a number of well-established phenomena in target-elicited saccades: the gap effect, express saccades, the remote distractor effect, and the global effect. High-level control of the pathways in tasks such as visual search and reading is discussed; it operates through spatial selection and search selection, which generally combine in an automated way. The model is examined in relation to data from patients with unilateral neglect.</div>"
         },
         {
-            "number": "2", 
-            "x": 54.5,
-            "y": 16,
+            "number": "1", 
+            "x": 52.5,
+            "y": 11.5,
             "w": 13,
             "h": 2,
             "page": 3,
@@ -27,10 +27,10 @@
             "annotationYear": "2001",
             "annotation": "",
             "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
-            "data": "<div style='z-index:9999; position:relative;'><div style='padding-right:30px; padding-top:100px;'><h1>Clemson University</h1></div><br><iframe id='map_canvas1'src='https://www.google.com/maps/embed/v1/place?q=Clemson+University&key=AIzaSyAN0om9mFmy1QN6Wf54tXAowK4eT0ZUPrU' width='500' height='300' frameborder='0' style='border: 0'></iframe></div>"
+            "data": "<div style='z-index:9999; position:relative;'><div style='padding-right:30px; padding-top:100px;'><h1>Keith Rayner</h1></div><br><br><p>Keither Rayner is a well known specialist in eye tracking technologies. He is based out of UCSD: </p><br><iframe id='map_canvas1'src='https://www.google.com/maps/embed/v1/place?q=UCSD&key=AIzaSyAN0om9mFmy1QN6Wf54tXAowK4eT0ZUPrU' width='500' height='300' frameborder='0' style='border: 0'></iframe><br><br><p>His research encompasses many cross-disciplinary fields of eye tracking research.</p></div>"
         },       
         {
-            "number": "3",
+            "number": "2",
             "x": 9,
             "y": 66.5,
             "w": 36,
@@ -43,7 +43,7 @@
             "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Asaad,Rainer, & Miller, 2000</h1> <br> <p>This paper reviews the literature on eye movements from the standpoint of automatic control systems. Some general reference to the neurophysiology and neuroanatomy of the oculomotor system is made, but the emphasis is upon those interdisciplinary studies which, either qualitatively or quantitatively, describe eye movements within the framework of control systems theory. Reviewed are the four major subdivisions of eye movement control: the saccadic, the smooth pursuit, the vergence, and the vestibular systems. Analytical descriptions of the mechanics of the eyeball, orbit, and extraocular muscles, which are common to all these systems, are also reviewed.</p></div>"
     },
     {
-            "number": "4", 
+            "number": "3", 
             "x": 54.5,
             "y": 16,
             "w": 13,
@@ -56,7 +56,7 @@
             "data": "<div style='z-index:9999; position:relative;'><div style='padding-right:30px; padding-top:100px;'><h1>Graph</h1></div><br><iframe src='https://plot.ly/~RPlotBot/501.embed'height='600' width='100%'scrolling='no' seamless='seamless'frameBorder='0'></iframe></div>"
     },
     {
-            "number": "5", 
+            "number": "4", 
             "x": 53.5,
             "y": 28,
             "w": 34.5,
@@ -67,5 +67,45 @@
             "annotation": "",
             "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
             "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Gaze Contingent</h1> <br> <p>The gaze-contingency paradigm is a general term for techniques allowing a computer screen display to change in function depending on where the viewer is looking. Gaze-contingent techniques are part of the eye movement field of study in psychology. (Wikipedia)</p></div>"
-    }]
+    },
+    {
+            "number": "5",
+            "x": 10,
+            "y": 30,
+            "w": 37,
+            "h": 2,
+            "page": 2,
+            "annotationName": "Thomas Jones",
+            "annotationYear": "2001",
+            "annotation": "",
+            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
+            "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Snodderly, Kagan, and Gur, 2001</h1> <br> <p>In V1 duplex cells, the form of responses to gratings depends on temporal frequency. Basically, seeing what happens neuronally when your eye shifts around.</p> <br> <img src=\"https://media.giphy.com/media/5uFstavWI5r20/giphy.gif\"></div>"
+    },
+    {
+            "number": "6",
+            "x": 52,
+            "y": 38,
+            "w": 37,
+            "h": 2,
+            "page": 2,
+            "annotationName": "Thomas Jones",
+            "annotationYear": "2001",
+            "annotation": "",
+            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
+            "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Rayner, 1998</h1> <br> <h2>Eye Movements in Reading and Information Processing: 20 Years of Research.</h2> <br> <p>Recent studies of eye movements in reading and other information processing tasks, such as music reading, typing, visual search, and scene perception, are reviewed. The major emphasis of the review is on reading as a specific example of cognitive processing. Basic topics discussed with respect to reading are (a) the characteristics of eye movements, (b) the perceptual span, (c) integration of information across saccades, (d) eye movement control, and (e) individual differences (including dyslexia). Similar topics are discussed with respect to the other tasks examined. The basic theme of the review is that eye movement data reflect moment-to-moment cognitive processes in the various tasks examined. Theoretical and practical considerations concerning the use of eye movement data are also discussed.</p></div>"
+    },
+    {
+            "number": "7",
+            "x": 9,
+            "y": 38,
+            "w": 39,
+            "h": 2,
+            "page": 5,
+            "annotationName": "Thomas Jones",
+            "annotationYear": "2001",
+            "annotation": "",
+            "picture": "http://eyesee-research.com/wp-content/uploads/2015/08/eye_tracking1.jpg",
+            "data": "<div style=\"padding-right:20px;padding-top:60px;\"><h1>Visual Scan</h1> <br> <h2>Visual scan - what you need to know.</h2> <br> <p>These scientists want to determine the effect of particular features in art on the scanpath of one's gaze. For example, this scan path shows a cyclical scanpath of where a user is looking in a picture: </p><br><br><img src=\"https://media.giphy.com/media/Fy5w02IyHXAwo/giphy.gif\"><br><br><p>It is useful for artists to have an understanding of where one would look in their art based on eye tracking analysis!</p></div>"
+    }
+    ]
 }
