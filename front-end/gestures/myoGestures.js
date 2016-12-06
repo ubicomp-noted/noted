@@ -55,6 +55,9 @@ MyoGestures.prototype._gestures = function(){
       }
       console.log("Pose: ", pose_name);
     }
+    if(pose_name === 'double_tap'){
+      sexCloud();
+    }
 
     // Wave_out will generate the annotations
     if(pose_name === 'wave_out'){
